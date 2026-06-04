@@ -15,10 +15,14 @@ export const Route = createFileRoute("/tasks/$id")({
   },
   component: TaskDetail,
   notFoundComponent: () => (
-    <AppShell><div className="p-8 text-center text-sm text-muted-foreground">Task not found.</div></AppShell>
+    <AppShell>
+      <div className="p-8 text-center text-sm text-muted-foreground">Task not found.</div>
+    </AppShell>
   ),
   errorComponent: ({ error }) => (
-    <AppShell><div className="p-8 text-center text-sm text-destructive">{error.message}</div></AppShell>
+    <AppShell>
+      <div className="p-8 text-center text-sm text-destructive">{error.message}</div>
+    </AppShell>
   ),
 });
 
@@ -36,13 +40,19 @@ const PHASES = [
 function TaskDetail() {
   const task = Route.useLoaderData();
   const [tab, setTab] = useState<Tab>("Overview");
-  const { data: tests } = useQuery({ queryKey: ["tests", task.id], queryFn: () => getTests(task.id) });
+  const { data: tests } = useQuery({
+    queryKey: ["tests", task.id],
+    queryFn: () => getTests(task.id),
+  });
   const { data: logs = [] } = useQuery({ queryKey: ["logs"], queryFn: getTerminalLogs });
 
   return (
     <AppShell>
       <div className="flex items-center justify-between">
-        <Link to="/tasks" className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground">
+        <Link
+          to="/tasks"
+          className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground"
+        >
           <ArrowLeft className="h-4 w-4" /> {task.title}
         </Link>
         <button className="grid h-8 w-8 place-items-center rounded-md hover:bg-card">
@@ -97,9 +107,14 @@ function TaskDetail() {
         {tab === "Overview" && (
           <div className="space-y-2">
             {PHASES.map((p) => (
-              <div key={p.name} className="flex items-center gap-3 rounded-lg border border-border bg-card p-3">
+              <div
+                key={p.name}
+                className="flex items-center gap-3 rounded-lg border border-border bg-card p-3"
+              >
                 {p.status === "done" && <CheckCircle2 className="h-4 w-4 text-primary" />}
-                {p.status === "active" && <Circle className="h-4 w-4 text-primary animate-pulse" fill="currentColor" />}
+                {p.status === "active" && (
+                  <Circle className="h-4 w-4 text-primary animate-pulse" fill="currentColor" />
+                )}
                 {p.status === "pending" && <Circle className="h-4 w-4 text-muted-foreground" />}
                 <div className="text-sm">{p.name}</div>
                 <div className="ml-auto text-[10px] uppercase tracking-wide text-muted-foreground">
@@ -108,7 +123,9 @@ function TaskDetail() {
               </div>
             ))}
             <div className="mt-4 rounded-xl border border-border bg-card p-3">
-              <div className="text-[11px] uppercase tracking-wide text-muted-foreground">Summary</div>
+              <div className="text-[11px] uppercase tracking-wide text-muted-foreground">
+                Summary
+              </div>
               <p className="mt-2 text-sm leading-relaxed text-foreground">{task.summary}</p>
             </div>
           </div>
@@ -132,13 +149,19 @@ function TaskDetail() {
 
         {tab === "Logs" && (
           <pre className="rounded-xl border border-border bg-card p-3 font-mono text-[11px] leading-relaxed text-muted-foreground max-h-[60vh] overflow-auto scrollbar-thin">
-{logs.map((l) => l.text).join("\n")}
+            {logs.map((l) => l.text).join("\n")}
           </pre>
         )}
 
         {tab === "Files" && (
           <div className="rounded-xl border border-border bg-card divide-y divide-border">
-            {["src/controllers/authController.js","src/routes/auth.js","src/middleware/rateLimit.js","tests/auth.test.js","tests/login.test.js"].map((f) => (
+            {[
+              "src/controllers/authController.js",
+              "src/routes/auth.js",
+              "src/middleware/rateLimit.js",
+              "tests/auth.test.js",
+              "tests/login.test.js",
+            ].map((f) => (
               <div key={f} className="flex items-center justify-between p-3 text-sm">
                 <span className="font-mono text-foreground truncate">{f}</span>
                 <span className="text-[10px] text-warning uppercase tracking-wide">Modified</span>
@@ -154,7 +177,10 @@ function TaskDetail() {
             <div className="text-primary">+ const bcrypt = require('bcryptjs');</div>
             <div className="text-muted-foreground mt-2">// New validation</div>
             <div className="text-primary">+ if (!email || !password) {"{"}</div>
-            <div className="text-primary">+   return res.status(400).json({"{"}error:'Email and password required'{"}"}{"}"});</div>
+            <div className="text-primary">
+              + return res.status(400).json({"{"}error:'Email and password required'{"}"}
+              {"}"});
+            </div>
             <div className="text-primary">+ {"}"}</div>
           </div>
         )}
@@ -164,24 +190,32 @@ function TaskDetail() {
             <div className="grid grid-cols-3 gap-2">
               <div className="rounded-xl border border-border bg-card p-3 text-center">
                 <div className="text-2xl font-semibold">{tests.total}</div>
-                <div className="text-[10px] uppercase tracking-wide text-muted-foreground">Total</div>
+                <div className="text-[10px] uppercase tracking-wide text-muted-foreground">
+                  Total
+                </div>
               </div>
               <div className="rounded-xl border border-border bg-card p-3 text-center">
                 <div className="text-2xl font-semibold text-primary">{tests.passed}</div>
-                <div className="text-[10px] uppercase tracking-wide text-muted-foreground">Passed</div>
+                <div className="text-[10px] uppercase tracking-wide text-muted-foreground">
+                  Passed
+                </div>
               </div>
               <div className="rounded-xl border border-border bg-card p-3 text-center">
                 <div className="text-2xl font-semibold text-destructive">{tests.failed}</div>
-                <div className="text-[10px] uppercase tracking-wide text-muted-foreground">Failed</div>
+                <div className="text-[10px] uppercase tracking-wide text-muted-foreground">
+                  Failed
+                </div>
               </div>
             </div>
             <div className="mt-3 rounded-xl border border-border bg-card divide-y divide-border">
               {tests.suites.map((s) => (
                 <div key={s.name} className="flex items-center justify-between p-3 text-sm">
                   <div className="flex items-center gap-2">
-                    {s.status === "passed"
-                      ? <CheckCircle2 className="h-4 w-4 text-primary" />
-                      : <XCircle className="h-4 w-4 text-destructive" />}
+                    {s.status === "passed" ? (
+                      <CheckCircle2 className="h-4 w-4 text-primary" />
+                    ) : (
+                      <XCircle className="h-4 w-4 text-destructive" />
+                    )}
                     <span className="font-mono">{s.name}</span>
                   </div>
                   <span className="text-[11px] text-muted-foreground font-mono">{s.ms}ms</span>
@@ -193,13 +227,24 @@ function TaskDetail() {
 
         {tab === "Approvals" && (
           <div className="rounded-xl border border-border bg-card p-4">
-            <span className="inline-block rounded-md bg-destructive/15 text-destructive border border-destructive/30 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide">High Risk</span>
-            <div className="mt-3 text-[11px] uppercase tracking-wide text-muted-foreground">Run Command</div>
+            <span className="inline-block rounded-md bg-destructive/15 text-destructive border border-destructive/30 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide">
+              High Risk
+            </span>
+            <div className="mt-3 text-[11px] uppercase tracking-wide text-muted-foreground">
+              Run Command
+            </div>
             <div className="mt-1 font-mono text-sm">npm run deploy</div>
-            <div className="mt-3 text-[11px] uppercase tracking-wide text-muted-foreground">Working Directory</div>
+            <div className="mt-3 text-[11px] uppercase tracking-wide text-muted-foreground">
+              Working Directory
+            </div>
             <div className="mt-1 font-mono text-sm">/home/omena/omenacore</div>
             <ul className="mt-3 space-y-1.5 text-sm">
-              {["Build the production version","Run tests","Deploy to production server","Restart services"].map((s) => (
+              {[
+                "Build the production version",
+                "Run tests",
+                "Deploy to production server",
+                "Restart services",
+              ].map((s) => (
                 <li key={s} className="flex items-center gap-2">
                   <CheckCircle2 className="h-3.5 w-3.5 text-primary" />
                   <span>{s}</span>
@@ -210,8 +255,12 @@ function TaskDetail() {
               ⚠ This action cannot be undone
             </div>
             <div className="mt-3 grid gap-2">
-              <button className="rounded-md bg-primary py-2 text-sm font-semibold text-primary-foreground hover:bg-primary/90">Approve</button>
-              <button className="rounded-md border border-border py-2 text-sm font-semibold hover:bg-card">Reject</button>
+              <button className="rounded-md bg-primary py-2 text-sm font-semibold text-primary-foreground hover:bg-primary/90">
+                Approve
+              </button>
+              <button className="rounded-md border border-border py-2 text-sm font-semibold hover:bg-card">
+                Reject
+              </button>
             </div>
           </div>
         )}

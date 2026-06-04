@@ -46,9 +46,22 @@ export interface Notification {
   read: boolean;
 }
 
-export interface Workspace { id: string; name: string; path: string; }
-export interface Agent { id: string; name: string; role: string; active: boolean; }
-export interface ModelOption { id: string; label: string; provider: string; }
+export interface Workspace {
+  id: string;
+  name: string;
+  path: string;
+}
+export interface Agent {
+  id: string;
+  name: string;
+  role: string;
+  active: boolean;
+}
+export interface ModelOption {
+  id: string;
+  label: string;
+  provider: string;
+}
 
 export const MODELS: ModelOption[] = [
   { id: "omena-smart", label: "Omena Smart", provider: "omena" },
@@ -139,7 +152,8 @@ export const CHAT_SEED: ChatMessage[] = [
   {
     id: "m1",
     role: "user",
-    content: "Create a secure login API with email and password using JWT. Add rate limiting and tests.",
+    content:
+      "Create a secure login API with email and password using JWT. Add rate limiting and tests.",
     createdAt: new Date(Date.now() - 1000 * 60 * 4).toISOString(),
   },
   {
@@ -192,21 +206,61 @@ export const FILE_TREE: FileNode = {
           path: "omenacore/backend/src",
           type: "dir",
           children: [
-            { name: "controllers", path: "omenacore/backend/src/controllers", type: "dir", children: [
-              { name: "authController.js", path: "omenacore/backend/src/controllers/authController.js", type: "file", size: 2150, modified: "2m ago" },
-            ]},
+            {
+              name: "controllers",
+              path: "omenacore/backend/src/controllers",
+              type: "dir",
+              children: [
+                {
+                  name: "authController.js",
+                  path: "omenacore/backend/src/controllers/authController.js",
+                  type: "file",
+                  size: 2150,
+                  modified: "2m ago",
+                },
+              ],
+            },
             { name: "routes", path: "omenacore/backend/src/routes", type: "dir", children: [] },
-            { name: "middleware", path: "omenacore/backend/src/middleware", type: "dir", children: [] },
+            {
+              name: "middleware",
+              path: "omenacore/backend/src/middleware",
+              type: "dir",
+              children: [],
+            },
             { name: "models", path: "omenacore/backend/src/models", type: "dir", children: [] },
-            { name: "server.js", path: "omenacore/backend/src/server.js", type: "file", size: 980, modified: "12m ago" },
+            {
+              name: "server.js",
+              path: "omenacore/backend/src/server.js",
+              type: "file",
+              size: 980,
+              modified: "12m ago",
+            },
           ],
         },
         { name: "tests", path: "omenacore/backend/tests", type: "dir", children: [] },
-        { name: ".env", path: "omenacore/backend/.env", type: "file", size: 420, modified: "1h ago" },
-        { name: "package.json", path: "omenacore/backend/package.json", type: "file", size: 1240, modified: "1d ago" },
+        {
+          name: ".env",
+          path: "omenacore/backend/.env",
+          type: "file",
+          size: 420,
+          modified: "1h ago",
+        },
+        {
+          name: "package.json",
+          path: "omenacore/backend/package.json",
+          type: "file",
+          size: 1240,
+          modified: "1d ago",
+        },
       ],
     },
-    { name: "README.md", path: "omenacore/README.md", type: "file", size: 3200, modified: "2d ago" },
+    {
+      name: "README.md",
+      path: "omenacore/README.md",
+      type: "file",
+      size: 3200,
+      modified: "2d ago",
+    },
   ],
 };
 
@@ -239,8 +293,36 @@ exports.login = async (req, res) => {
 };
 
 export const NOTIFICATIONS: Notification[] = [
-  { id: "n1", title: "Deployment Complete", body: "Production server updated", kind: "success", at: "2m ago", read: false },
-  { id: "n2", title: "Tests Passed", body: "All tests passed (12)", kind: "success", at: "5m ago", read: false },
-  { id: "n3", title: "Approval Required", body: "npm run deploy", kind: "warning", at: "7m ago", read: false },
-  { id: "n4", title: "Task Failed", body: "Fix Payment Bug", kind: "danger", at: "15m ago", read: true },
+  {
+    id: "n1",
+    title: "Deployment Complete",
+    body: "Production server updated",
+    kind: "success",
+    at: "2m ago",
+    read: false,
+  },
+  {
+    id: "n2",
+    title: "Tests Passed",
+    body: "All tests passed (12)",
+    kind: "success",
+    at: "5m ago",
+    read: false,
+  },
+  {
+    id: "n3",
+    title: "Approval Required",
+    body: "npm run deploy",
+    kind: "warning",
+    at: "7m ago",
+    read: false,
+  },
+  {
+    id: "n4",
+    title: "Task Failed",
+    body: "Fix Payment Bug",
+    kind: "danger",
+    at: "15m ago",
+    read: true,
+  },
 ];

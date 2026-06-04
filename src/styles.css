@@ -42,17 +42,17 @@
 :root {
   --radius: 0.75rem;
   /* Omena Codex dark theme */
-  --background: oklch(0.145 0 0);        /* #0A0A0A */
-  --foreground: oklch(0.96 0.005 250);   /* #F3F4F6 */
-  --surface: oklch(0.17 0 0);            /* #111111 */
-  --surface-2: oklch(0.205 0 0);         /* #1a1a1a */
+  --background: oklch(0.145 0 0); /* #0A0A0A */
+  --foreground: oklch(0.96 0.005 250); /* #F3F4F6 */
+  --surface: oklch(0.17 0 0); /* #111111 */
+  --surface-2: oklch(0.205 0 0); /* #1a1a1a */
   --card: oklch(0.17 0 0);
   --card-foreground: oklch(0.96 0.005 250);
   --popover: oklch(0.18 0 0);
   --popover-foreground: oklch(0.96 0.005 250);
-  --primary: oklch(0.69 0.156 162);      /* #10A37F */
+  --primary: oklch(0.69 0.156 162); /* #10A37F */
   --primary-foreground: oklch(0.08 0 0);
-  --accent-glow: oklch(0.82 0.18 162);   /* #00E5A0 */
+  --accent-glow: oklch(0.82 0.18 162); /* #00E5A0 */
   --secondary: oklch(0.22 0 0);
   --secondary-foreground: oklch(0.96 0.005 250);
   --muted: oklch(0.21 0 0);
@@ -64,15 +64,23 @@
   --danger: oklch(0.62 0.22 25);
   --warning: oklch(0.78 0.16 75);
   --success: oklch(0.69 0.156 162);
-  --border: oklch(0.235 0 0);            /* #1F1F23 */
+  --border: oklch(0.235 0 0); /* #1F1F23 */
   --input: oklch(0.235 0 0);
   --ring: oklch(0.69 0.156 162);
 }
 
 @layer base {
-  * { border-color: var(--color-border); }
-  html, body, #root { height: 100%; }
-  html { -webkit-text-size-adjust: 100%; }
+  * {
+    border-color: var(--color-border);
+  }
+  html,
+  body,
+  #root {
+    height: 100%;
+  }
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
   body {
     background-color: var(--color-background);
     color: var(--color-foreground);
@@ -83,22 +91,43 @@
     overscroll-behavior-y: none;
     text-rendering: optimizeLegibility;
   }
-  h1, h2, h3, h4 { letter-spacing: -0.02em; font-weight: 600; }
-  h1 { letter-spacing: -0.03em; }
-  ::selection { background: color-mix(in oklab, var(--primary) 35%, transparent); color: var(--foreground); }
+  h1,
+  h2,
+  h3,
+  h4 {
+    letter-spacing: -0.02em;
+    font-weight: 600;
+  }
+  h1 {
+    letter-spacing: -0.03em;
+  }
+  ::selection {
+    background: color-mix(in oklab, var(--primary) 35%, transparent);
+    color: var(--foreground);
+  }
 }
 
 @layer utilities {
   .glow-accent {
-    box-shadow: 0 0 0 1px color-mix(in oklab, var(--accent) 40%, transparent),
-                0 0 24px -4px color-mix(in oklab, var(--accent-glow) 50%, transparent);
+    box-shadow:
+      0 0 0 1px color-mix(in oklab, var(--accent) 40%, transparent),
+      0 0 24px -4px color-mix(in oklab, var(--accent-glow) 50%, transparent);
   }
-  .scrollbar-thin::-webkit-scrollbar { width: 6px; height: 6px; }
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
   .scrollbar-thin::-webkit-scrollbar-thumb {
     background: color-mix(in oklab, var(--foreground) 12%, transparent);
     border-radius: 3px;
   }
-  .scrollbar-none::-webkit-scrollbar { display: none; }
-  .scrollbar-none { scrollbar-width: none; }
-  .text-balance { text-wrap: balance; }
+  .scrollbar-none::-webkit-scrollbar {
+    display: none;
+  }
+  .scrollbar-none {
+    scrollbar-width: none;
+  }
+  .text-balance {
+    text-wrap: balance;
+  }
 }

@@ -24,6 +24,5 @@ export const useApp = create<AppState>((set) => ({
   setWorkspace: (id) => set({ workspaceId: id }),
   setAgent: (id) => set({ agentId: id }),
   setModel: (id) => set({ modelId: id }),
-  setPermission: (key, value) =>
-    set((s) => ({ permissions: { ...s.permissions, [key]: value } })),
+  setPermission: (key, value) => set((s) => ({ permissions: { ...s.permissions, [key]: value } })),
 }));

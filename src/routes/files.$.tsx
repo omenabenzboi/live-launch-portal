@@ -14,7 +14,11 @@ export const Route = createFileRoute("/files/$")({
 function FileViewer() {
   const { _splat } = Route.useParams();
   const path = _splat ?? "";
-  const { data } = useQuery({ queryKey: ["file", path], queryFn: () => getFileContent(path), enabled: !!path });
+  const { data } = useQuery({
+    queryKey: ["file", path],
+    queryFn: () => getFileContent(path),
+    enabled: !!path,
+  });
   const [content, setContent] = useState("");
   const [original, setOriginal] = useState("");
   const qc = useQueryClient();
@@ -26,7 +30,12 @@ function FileViewer() {
       toast.success("File saved");
     },
   });
-  useEffect(() => { if (data !== undefined) { setContent(data); setOriginal(data); } }, [data]);
+  useEffect(() => {
+    if (data !== undefined) {
+      setContent(data);
+      setOriginal(data);
+    }
+  }, [data]);
 
   const dirty = content !== original;
   const segments = path.split("/").filter(Boolean);
@@ -56,7 +65,10 @@ function FileViewer() {
 
       <nav className="mt-2 text-[11px] text-muted-foreground font-mono truncate">
         {segments.map((s: string, i: number) => (
-          <span key={i}>{s}{i < segments.length - 1 ? " / " : ""}</span>
+          <span key={i}>
+            {s}
+            {i < segments.length - 1 ? " / " : ""}
+          </span>
         ))}
       </nav>
 
@@ -64,7 +76,9 @@ function FileViewer() {
         <div className="flex border-b border-border">
           <div className="select-none py-2 px-2 font-mono text-[11px] text-muted-foreground/60 border-r border-border">
             {content.split("\n").map((_: string, i: number) => (
-              <div key={i} className="text-right pr-1.5">{i + 1}</div>
+              <div key={i} className="text-right pr-1.5">
+                {i + 1}
+              </div>
             ))}
           </div>
           <textarea

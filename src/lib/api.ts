@@ -1,10 +1,23 @@
 // Typed API client. In dev/no-backend mode it falls back to seeded mock data.
 // Set VITE_API_BASE_URL to point at a real backend; all functions then hit HTTP.
 import {
-  TASKS, CHAT_SEED, TERMINAL_SEED, FILE_TREE, FILE_CONTENTS,
-  NOTIFICATIONS, MODELS, WORKSPACES, AGENTS,
-  type Task, type ChatMessage, type TerminalLine, type FileNode,
-  type Notification, type ModelOption, type Workspace, type Agent,
+  TASKS,
+  CHAT_SEED,
+  TERMINAL_SEED,
+  FILE_TREE,
+  FILE_CONTENTS,
+  NOTIFICATIONS,
+  MODELS,
+  WORKSPACES,
+  AGENTS,
+  type Task,
+  type ChatMessage,
+  type TerminalLine,
+  type FileNode,
+  type Notification,
+  type ModelOption,
+  type Workspace,
+  type Agent,
 } from "./mock-data";
 
 const BASE = (import.meta.env.VITE_API_BASE_URL as string | undefined) ?? "";
@@ -28,13 +41,22 @@ export async function getTask(id: string): Promise<Task | null> {
   if (USE_MOCK) return Promise.resolve(TASKS.find((t) => t.id === id) ?? null);
   return http(`/tasks/${id}`);
 }
-export async function createTask(input: { title: string; prompt: string; agent?: string }): Promise<Task> {
+export async function createTask(input: {
+  title: string;
+  prompt: string;
+  agent?: string;
+}): Promise<Task> {
   if (USE_MOCK) {
     const t: Task = {
       id: `t_${Math.random().toString(36).slice(2, 8)}`,
-      title: input.title, status: "queued", progress: 0,
-      agent: input.agent ?? "Backend Agent", workspace: "omenacore",
-      updatedAt: "just now", summary: input.prompt, filesChanged: 0,
+      title: input.title,
+      status: "queued",
+      progress: 0,
+      agent: input.agent ?? "Backend Agent",
+      workspace: "omenacore",
+      updatedAt: "just now",
+      summary: input.prompt,
+      filesChanged: 0,
     };
     TASKS.unshift(t);
     return Promise.resolve(t);
@@ -43,7 +65,12 @@ export async function createTask(input: { title: string; prompt: string; agent?:
 }
 
 // --- Chat ---
-export async function sendChatMessage(input: { content: string; model: string; agent: string; workspace: string }): Promise<ChatMessage> {
+export async function sendChatMessage(input: {
+  content: string;
+  model: string;
+  agent: string;
+  workspace: string;
+}): Promise<ChatMessage> {
   if (USE_MOCK) {
     await new Promise((r) => setTimeout(r, 400));
     return {
@@ -84,8 +111,14 @@ export async function getFileContent(path: string): Promise<string> {
   return http(`/files/${encodeURIComponent(path)}/content`);
 }
 export async function saveFile(path: string, content: string): Promise<{ ok: true }> {
-  if (USE_MOCK) { FILE_CONTENTS[path] = content; return Promise.resolve({ ok: true }); }
-  return http(`/files/${encodeURIComponent(path)}/content`, { method: "PUT", body: JSON.stringify({ content }) });
+  if (USE_MOCK) {
+    FILE_CONTENTS[path] = content;
+    return Promise.resolve({ ok: true });
+  }
+  return http(`/files/${encodeURIComponent(path)}/content`, {
+    method: "PUT",
+    body: JSON.stringify({ content }),
+  });
 }
 
 // --- Diffs / Tests ---
@@ -94,30 +127,41 @@ export async function getDiffs(taskId: string) {
   return http(`/tasks/${taskId}/diffs`);
 }
 export interface TestsResult {
-  total: number; passed: number; failed: number; taskId: string;
+  total: number;
+  passed: number;
+  failed: number;
+  taskId: string;
   suites: Array<{ name: string; ms: number; status: "passed" | "failed" }>;
 }
 export async function getTests(taskId: string): Promise<TestsResult> {
-  if (USE_MOCK) return Promise.resolve({
-    total: 12, passed: 12, failed: 0, taskId,
-    suites: [
-      { name: "auth.test.js", ms: 345, status: "passed" },
-      { name: "user.test.js", ms: 278, status: "passed" },
-      { name: "login.test.js", ms: 412, status: "passed" },
-      { name: "middleware.test.js", ms: 198, status: "passed" },
-      { name: "validation.test.js", ms: 156, status: "passed" },
-    ],
-  });
+  if (USE_MOCK)
+    return Promise.resolve({
+      total: 12,
+      passed: 12,
+      failed: 0,
+      taskId,
+      suites: [
+        { name: "auth.test.js", ms: 345, status: "passed" },
+        { name: "user.test.js", ms: 278, status: "passed" },
+        { name: "login.test.js", ms: 412, status: "passed" },
+        { name: "middleware.test.js", ms: 198, status: "passed" },
+        { name: "validation.test.js", ms: 156, status: "passed" },
+      ],
+    });
   return http(`/tasks/${taskId}/tests`);
 }
 
 // --- Providers / Models / Agents / Workspaces ---
 export async function getProviders() {
-  if (USE_MOCK) return Promise.resolve([
-    { id: "openai", connected: true }, { id: "anthropic", connected: true },
-    { id: "google", connected: false }, { id: "deepseek", connected: false },
-    { id: "xai", connected: false }, { id: "mistral", connected: false },
-  ]);
+  if (USE_MOCK)
+    return Promise.resolve([
+      { id: "openai", connected: true },
+      { id: "anthropic", connected: true },
+      { id: "google", connected: false },
+      { id: "deepseek", connected: false },
+      { id: "xai", connected: false },
+      { id: "mistral", connected: false },
+    ]);
   return http("/providers");
 }
 export async function updateProvider(id: string, patch: Record<string, unknown>) {
@@ -167,12 +211,23 @@ export function openLogStream(onLine: (l: TerminalLine) => void): () => void {
       "POST /api/auth/login 200 87ms",
     ];
     const h = setInterval(() => {
-      onLine({ id: `live_${i}`, stream: "stdout", text: samples[i % samples.length], ts: new Date().toISOString() });
+      onLine({
+        id: `live_${i}`,
+        stream: "stdout",
+        text: samples[i % samples.length],
+        ts: new Date().toISOString(),
+      });
       i++;
     }, 1800);
     return () => clearInterval(h);
   }
   const ws = new WebSocket(wsUrl);
-  ws.onmessage = (ev) => { try { onLine(JSON.parse(ev.data)); } catch {} };
+  ws.onmessage = (ev) => {
+    try {
+      onLine(JSON.parse(ev.data));
+    } catch {
+      // ignore malformed frames
+    }
+  };
   return () => ws.close();
 }

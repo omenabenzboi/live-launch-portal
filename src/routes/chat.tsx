@@ -8,8 +8,12 @@ import { MODELS, AGENTS, WORKSPACES } from "@/lib/mock-data";
 import { AppShell } from "@/components/layout/AppShell";
 import { Paperclip, Mic, ArrowUp, ChevronDown, Hexagon, Plus, Globe, Wrench } from "lucide-react";
 import {
-  DropdownMenu, DropdownMenuContent, DropdownMenuItem,
-  DropdownMenuTrigger, DropdownMenuLabel, DropdownMenuSeparator,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 
 export const Route = createFileRoute("/chat")({
@@ -17,11 +21,7 @@ export const Route = createFileRoute("/chat")({
   component: ChatPage,
 });
 
-const QUICK = [
-  "Implement JWT login API",
-  "Review failed E2E test",
-  "Refactor checkout flow",
-];
+const QUICK = ["Implement JWT login API", "Review failed E2E test", "Refactor checkout flow"];
 
 function ChatPage() {
   const { data: seed = [] } = useQuery({ queryKey: ["chat-seed"], queryFn: getChatSeed });
@@ -35,12 +35,15 @@ function ChatPage() {
   const agent = AGENTS.find((a) => a.id === agentId)!;
   const workspace = WORKSPACES.find((w) => w.id === workspaceId)!;
 
-  useEffect(() => { if (seed.length && messages.length === 0) setMessages(seed); }, [seed]);
+  useEffect(() => {
+    if (seed.length && messages.length === 0) setMessages(seed);
+  }, [seed]);
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
   }, [messages, sending]);
   useEffect(() => {
-    const ta = taRef.current; if (!ta) return;
+    const ta = taRef.current;
+    if (!ta) return;
     ta.style.height = "0px";
     ta.style.height = Math.min(140, ta.scrollHeight) + "px";
   }, [input]);
@@ -48,12 +51,22 @@ function ChatPage() {
   async function handleSend(text?: string) {
     const content = (text ?? input).trim();
     if (!content || sending) return;
-    const userMsg: ChatMessage = { id: `m_${Date.now()}`, role: "user", content, createdAt: new Date().toISOString() };
+    const userMsg: ChatMessage = {
+      id: `m_${Date.now()}`,
+      role: "user",
+      content,
+      createdAt: new Date().toISOString(),
+    };
     setMessages((m) => [...m, userMsg]);
     setInput("");
     setSending(true);
     try {
-      const reply = await sendChatMessage({ content, model: modelId, agent: agentId, workspace: workspaceId });
+      const reply = await sendChatMessage({
+        content,
+        model: modelId,
+        agent: agentId,
+        workspace: workspaceId,
+      });
       setMessages((m) => [...m, reply]);
     } finally {
       setSending(false);
@@ -73,9 +86,12 @@ function ChatPage() {
               <div className="mx-auto grid h-14 w-14 place-items-center rounded-2xl bg-gradient-to-br from-primary/25 to-primary/5 border border-primary/40 shadow-[0_0_40px_-8px] shadow-primary/40">
                 <Hexagon className="h-7 w-7 text-primary" strokeWidth={1.6} />
               </div>
-              <h2 className="mt-4 text-[20px] font-semibold tracking-tight">How can I help you ship?</h2>
+              <h2 className="mt-4 text-[20px] font-semibold tracking-tight">
+                How can I help you ship?
+              </h2>
               <p className="mt-1 text-[13px] text-muted-foreground">
-                Ask the {agent.name.toLowerCase()} to plan, build, test, or debug across {workspace.name}.
+                Ask the {agent.name.toLowerCase()} to plan, build, test, or debug across{" "}
+                {workspace.name}.
               </p>
               <div className="mt-5 grid gap-2">
                 {QUICK.map((q) => (
@@ -92,7 +108,10 @@ function ChatPage() {
           )}
 
           {messages.map((m) => (
-            <div key={m.id} className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}>
+            <div
+              key={m.id}
+              className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}
+            >
               {m.role === "user" ? (
                 <div className="max-w-[85%] rounded-2xl rounded-br-md bg-primary px-3.5 py-2.5 text-[14px] leading-relaxed text-primary-foreground whitespace-pre-wrap font-medium">
                   {m.content}
@@ -151,7 +170,12 @@ function ChatPage() {
               ref={taRef}
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); handleSend(); } }}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && !e.shiftKey) {
+                  e.preventDefault();
+                  handleSend();
+                }
+              }}
               placeholder="Ask Omena Codex to build, test, or debug…"
               rows={1}
               className="w-full resize-none bg-transparent px-2.5 pt-1.5 pb-1 text-[14.5px] leading-relaxed outline-none placeholder:text-muted-foreground/80"
@@ -159,13 +183,22 @@ function ChatPage() {
             <div className="flex items-center gap-0.5 pt-1 min-w-0">
               {/* Left tool group — keeps fixed width, never wraps */}
               <div className="flex shrink-0 items-center gap-0.5">
-                <button className="grid h-8 w-8 place-items-center rounded-lg text-muted-foreground hover:text-foreground hover:bg-secondary/60 active:scale-95 transition" aria-label="Attach">
+                <button
+                  className="grid h-8 w-8 place-items-center rounded-lg text-muted-foreground hover:text-foreground hover:bg-secondary/60 active:scale-95 transition"
+                  aria-label="Attach"
+                >
                   <Plus className="h-4 w-4" />
                 </button>
-                <button className="hidden xs:grid h-8 w-8 place-items-center rounded-lg text-muted-foreground hover:text-foreground hover:bg-secondary/60 active:scale-95 transition" aria-label="Tools">
+                <button
+                  className="hidden xs:grid h-8 w-8 place-items-center rounded-lg text-muted-foreground hover:text-foreground hover:bg-secondary/60 active:scale-95 transition"
+                  aria-label="Tools"
+                >
                   <Wrench className="h-4 w-4" />
                 </button>
-                <button className="hidden xs:grid h-8 w-8 place-items-center rounded-lg text-muted-foreground hover:text-foreground hover:bg-secondary/60 active:scale-95 transition" aria-label="Browse">
+                <button
+                  className="hidden xs:grid h-8 w-8 place-items-center rounded-lg text-muted-foreground hover:text-foreground hover:bg-secondary/60 active:scale-95 transition"
+                  aria-label="Browse"
+                >
                   <Globe className="h-4 w-4" />
                 </button>
               </div>
@@ -173,24 +206,34 @@ function ChatPage() {
               {/* Model pill — flex-shrinks gracefully and truncates */}
               <DropdownMenu>
                 <DropdownMenuTrigger className="ml-1 inline-flex min-w-0 max-w-[40%] items-center gap-1 rounded-lg border border-border/70 bg-secondary/40 px-2 py-1 text-[11px] text-foreground hover:border-primary/40">
-                  <span className="truncate font-mono uppercase tracking-wider text-[10px] text-primary">{model.label}</span>
+                  <span className="truncate font-mono uppercase tracking-wider text-[10px] text-primary">
+                    {model.label}
+                  </span>
                   <ChevronDown className="h-3 w-3 shrink-0 text-muted-foreground" />
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="start" className="w-56">
                   <DropdownMenuLabel>Model</DropdownMenuLabel>
                   <DropdownMenuSeparator />
                   {MODELS.map((m) => (
-                    <DropdownMenuItem key={m.id} onClick={() => setModel(m.id)}>{m.label}</DropdownMenuItem>
+                    <DropdownMenuItem key={m.id} onClick={() => setModel(m.id)}>
+                      {m.label}
+                    </DropdownMenuItem>
                   ))}
                 </DropdownMenuContent>
               </DropdownMenu>
 
               {/* Right action group — pinned right, never wraps */}
               <div className="ml-auto flex shrink-0 items-center gap-0.5 pl-1">
-                <button className="hidden xs:grid h-8 w-8 place-items-center rounded-lg text-muted-foreground hover:text-foreground hover:bg-secondary/60 active:scale-95 transition" aria-label="Attach file">
+                <button
+                  className="hidden xs:grid h-8 w-8 place-items-center rounded-lg text-muted-foreground hover:text-foreground hover:bg-secondary/60 active:scale-95 transition"
+                  aria-label="Attach file"
+                >
                   <Paperclip className="h-4 w-4" />
                 </button>
-                <button className="grid h-8 w-8 place-items-center rounded-lg text-muted-foreground hover:text-foreground hover:bg-secondary/60 active:scale-95 transition" aria-label="Voice">
+                <button
+                  className="grid h-8 w-8 place-items-center rounded-lg text-muted-foreground hover:text-foreground hover:bg-secondary/60 active:scale-95 transition"
+                  aria-label="Voice"
+                >
                   <Mic className="h-4 w-4" />
                 </button>
                 <button

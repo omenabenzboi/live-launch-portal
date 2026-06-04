@@ -20,7 +20,12 @@ function flatten(node: FileNode, depth = 0, acc: Array<FileNode & { depth: numbe
 function FilesPage() {
   const { data: tree } = useQuery({ queryKey: ["files"], queryFn: getFiles });
   const [q, setQ] = useState("");
-  if (!tree) return <AppShell><div className="text-sm text-muted-foreground">Loading…</div></AppShell>;
+  if (!tree)
+    return (
+      <AppShell>
+        <div className="text-sm text-muted-foreground">Loading…</div>
+      </AppShell>
+    );
   const all = flatten(tree).slice(1);
   const filtered = q.trim()
     ? all.filter((n) => n.name.toLowerCase().includes(q.toLowerCase()))
