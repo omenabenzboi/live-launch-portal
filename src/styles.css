@@ -36,6 +36,7 @@
   --color-surface-2: var(--surface-2);
   --font-sans: "Inter", system-ui, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  --breakpoint-xs: 22rem; /* 352px — enables `xs:` for small phones */
 }
 
 :root {
