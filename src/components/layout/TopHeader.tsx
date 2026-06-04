@@ -23,8 +23,15 @@ export function TopHeader() {
   const unread = NOTIFICATIONS.filter((n) => !n.read).length;
 
   return (
-    <header className="sticky top-0 z-40 border-b border-border/60 bg-background/85 backdrop-blur-md pt-[env(safe-area-inset-top)]">
-      <div className="flex items-center gap-2 px-3 py-2.5">
+    <header
+      className="sticky top-0 z-40 border-b border-border/60 bg-background/85 backdrop-blur-md"
+      style={{
+        paddingTop: "env(safe-area-inset-top)",
+        paddingLeft: "env(safe-area-inset-left)",
+        paddingRight: "env(safe-area-inset-right)",
+      }}
+    >
+      <div className="flex items-center gap-2 px-3 py-2.5 min-w-0">
         <Mark />
         {/* Unified context pill: workspace + agent + model in one tappable control */}
         <DropdownMenu>
