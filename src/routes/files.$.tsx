@@ -55,7 +55,7 @@ function FileViewer() {
       </div>
 
       <nav className="mt-2 text-[11px] text-muted-foreground font-mono truncate">
-        {segments.map((s, i) => (
+        {segments.map((s: string, i: number) => (
           <span key={i}>{s}{i < segments.length - 1 ? " / " : ""}</span>
         ))}
       </nav>
