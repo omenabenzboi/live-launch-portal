@@ -225,7 +225,9 @@ export function openLogStream(onLine: (l: TerminalLine) => void): () => void {
   ws.onmessage = (ev) => {
     try {
       onLine(JSON.parse(ev.data));
-    } catch {}
+    } catch {
+      // ignore malformed frames
+    }
   };
   return () => ws.close();
 }
