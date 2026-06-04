@@ -93,7 +93,11 @@ export async function getDiffs(taskId: string) {
   if (USE_MOCK) return Promise.resolve({ staged: 5, unstaged: 2, taskId });
   return http(`/tasks/${taskId}/diffs`);
 }
-export async function getTests(taskId: string) {
+export interface TestsResult {
+  total: number; passed: number; failed: number; taskId: string;
+  suites: Array<{ name: string; ms: number; status: "passed" | "failed" }>;
+}
+export async function getTests(taskId: string): Promise<TestsResult> {
   if (USE_MOCK) return Promise.resolve({
     total: 12, passed: 12, failed: 0, taskId,
     suites: [
