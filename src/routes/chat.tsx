@@ -127,15 +127,23 @@ function ChatPage() {
         className="fixed left-0 right-0 z-30 bg-gradient-to-t from-background via-background/95 to-background/0"
         style={{ bottom: "calc(64px + env(safe-area-inset-bottom))" }}
       >
-        <div className="mx-auto max-w-2xl px-3 pt-6 pb-3">
-          {/* Context strip */}
-          <div className="mb-2 flex items-center gap-1.5 text-[10.5px] font-mono">
-            <span className="inline-flex items-center gap-1 rounded-full border border-border/70 bg-card/60 px-2 py-0.5 text-foreground/85">
-              <span className="h-1.5 w-1.5 rounded-full bg-primary shadow-[0_0_6px] shadow-primary/80" />
-              {workspace.name}
+        <div
+          className="mx-auto w-full max-w-2xl pt-6 pb-3"
+          style={{
+            paddingLeft: "max(12px, env(safe-area-inset-left))",
+            paddingRight: "max(12px, env(safe-area-inset-right))",
+          }}
+        >
+          {/* Context strip — single-line, horizontally scrollable on tiny screens */}
+          <div className="mb-2 flex items-center gap-1.5 overflow-x-auto scrollbar-none text-[10.5px] font-mono whitespace-nowrap">
+            <span className="inline-flex shrink-0 items-center gap-1 rounded-full border border-border/70 bg-card/60 px-2 py-0.5 text-foreground/85 max-w-[55%]">
+              <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-primary shadow-[0_0_6px] shadow-primary/80" />
+              <span className="truncate">{workspace.name}</span>
             </span>
-            <span className="text-muted-foreground">/</span>
-            <span className="rounded-full border border-border/70 bg-card/60 px-2 py-0.5 text-foreground/85">{agent.name}</span>
+            <span className="shrink-0 text-muted-foreground">/</span>
+            <span className="shrink-0 truncate rounded-full border border-border/70 bg-card/60 px-2 py-0.5 text-foreground/85 max-w-[45%]">
+              {agent.name}
+            </span>
           </div>
 
           <div className="rounded-3xl border border-border/80 bg-card/90 backdrop-blur-md p-2 shadow-[0_8px_32px_-12px_rgba(0,0,0,0.6)] focus-within:border-primary/50 transition-colors">
@@ -148,20 +156,25 @@ function ChatPage() {
               rows={1}
               className="w-full resize-none bg-transparent px-2.5 pt-1.5 pb-1 text-[14.5px] leading-relaxed outline-none placeholder:text-muted-foreground/80"
             />
-            <div className="flex items-center gap-1 pt-1">
-              <button className="grid h-8 w-8 place-items-center rounded-lg text-muted-foreground hover:text-foreground hover:bg-secondary/60" aria-label="Attach">
-                <Plus className="h-4 w-4" />
-              </button>
-              <button className="grid h-8 w-8 place-items-center rounded-lg text-muted-foreground hover:text-foreground hover:bg-secondary/60" aria-label="Tools">
-                <Wrench className="h-4 w-4" />
-              </button>
-              <button className="grid h-8 w-8 place-items-center rounded-lg text-muted-foreground hover:text-foreground hover:bg-secondary/60" aria-label="Browse">
-                <Globe className="h-4 w-4" />
-              </button>
+            <div className="flex items-center gap-0.5 pt-1 min-w-0">
+              {/* Left tool group — keeps fixed width, never wraps */}
+              <div className="flex shrink-0 items-center gap-0.5">
+                <button className="grid h-8 w-8 place-items-center rounded-lg text-muted-foreground hover:text-foreground hover:bg-secondary/60 active:scale-95 transition" aria-label="Attach">
+                  <Plus className="h-4 w-4" />
+                </button>
+                <button className="hidden xs:grid h-8 w-8 place-items-center rounded-lg text-muted-foreground hover:text-foreground hover:bg-secondary/60 active:scale-95 transition" aria-label="Tools">
+                  <Wrench className="h-4 w-4" />
+                </button>
+                <button className="hidden xs:grid h-8 w-8 place-items-center rounded-lg text-muted-foreground hover:text-foreground hover:bg-secondary/60 active:scale-95 transition" aria-label="Browse">
+                  <Globe className="h-4 w-4" />
+                </button>
+              </div>
+
+              {/* Model pill — flex-shrinks gracefully and truncates */}
               <DropdownMenu>
-                <DropdownMenuTrigger className="ml-0.5 inline-flex items-center gap-1 rounded-lg border border-border/70 bg-secondary/40 px-2 py-1 text-[11px] text-foreground hover:border-primary/40">
-                  <span className="font-mono uppercase tracking-wider text-[10px] text-primary">{model.label}</span>
-                  <ChevronDown className="h-3 w-3 text-muted-foreground" />
+                <DropdownMenuTrigger className="ml-1 inline-flex min-w-0 max-w-[40%] items-center gap-1 rounded-lg border border-border/70 bg-secondary/40 px-2 py-1 text-[11px] text-foreground hover:border-primary/40">
+                  <span className="truncate font-mono uppercase tracking-wider text-[10px] text-primary">{model.label}</span>
+                  <ChevronDown className="h-3 w-3 shrink-0 text-muted-foreground" />
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="start" className="w-56">
                   <DropdownMenuLabel>Model</DropdownMenuLabel>
@@ -171,17 +184,19 @@ function ChatPage() {
                   ))}
                 </DropdownMenuContent>
               </DropdownMenu>
-              <div className="ml-auto flex items-center gap-1">
-                <button className="grid h-8 w-8 place-items-center rounded-lg text-muted-foreground hover:text-foreground hover:bg-secondary/60" aria-label="Attach file">
+
+              {/* Right action group — pinned right, never wraps */}
+              <div className="ml-auto flex shrink-0 items-center gap-0.5 pl-1">
+                <button className="hidden xs:grid h-8 w-8 place-items-center rounded-lg text-muted-foreground hover:text-foreground hover:bg-secondary/60 active:scale-95 transition" aria-label="Attach file">
                   <Paperclip className="h-4 w-4" />
                 </button>
-                <button className="grid h-8 w-8 place-items-center rounded-lg text-muted-foreground hover:text-foreground hover:bg-secondary/60" aria-label="Voice">
+                <button className="grid h-8 w-8 place-items-center rounded-lg text-muted-foreground hover:text-foreground hover:bg-secondary/60 active:scale-95 transition" aria-label="Voice">
                   <Mic className="h-4 w-4" />
                 </button>
                 <button
                   onClick={() => handleSend()}
                   disabled={!input.trim() || sending}
-                  className="grid h-9 w-9 place-items-center rounded-xl bg-primary text-primary-foreground shadow-[0_0_18px_-2px] shadow-primary/50 hover:bg-primary/90 disabled:opacity-40 disabled:shadow-none active:scale-95 transition"
+                  className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-primary text-primary-foreground shadow-[0_0_18px_-2px] shadow-primary/50 hover:bg-primary/90 disabled:opacity-40 disabled:shadow-none active:scale-95 transition"
                   aria-label="Send"
                 >
                   <ArrowUp className="h-4 w-4" strokeWidth={2.5} />
