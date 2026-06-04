@@ -18,11 +18,15 @@ function TerminalPage() {
   const { data: tasks = [] } = useQuery({ queryKey: ["tasks"], queryFn: getTasks });
   const [lines, setLines] = useState<TerminalLine[]>([]);
   const [taskId, setTaskId] = useState<string>("main");
+  const [streamState, setStreamState] = useState<StreamState>("connecting");
   const scrollRef = useRef<HTMLPreElement>(null);
 
   useEffect(() => { setLines(seed); }, [seed]);
   useEffect(() => {
-    const close = openLogStream((l) => setLines((prev) => [...prev, l].slice(-500)));
+    const close = openLogStream({
+      onLine: (l) => setLines((prev) => [...prev, l].slice(-500)),
+      onState: setStreamState,
+    });
     return close;
   }, []);
   useEffect(() => { scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight }); }, [lines]);
