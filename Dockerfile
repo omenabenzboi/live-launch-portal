@@ -9,7 +9,15 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 ENV NODE_ENV=production
-RUN bun run build
+RUN bun run build && \
+    echo "Build completed. Contents of /app:" && \
+    ls -la /app && \
+    if [ ! -d /app/.output ]; then \
+      echo "ERROR: Build did not produce .output directory"; \
+      echo "Available directories:"; \
+      find /app -maxdepth 1 -type d -exec basename {} \;; \
+      exit 1; \
+    fi
 
 FROM oven/bun:1.3-slim AS runner
 WORKDIR /app
