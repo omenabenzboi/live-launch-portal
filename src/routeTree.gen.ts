@@ -9,38 +9,186 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as TerminalRouteImport } from './routes/terminal'
+import { Route as TasksRouteImport } from './routes/tasks'
+import { Route as SettingsRouteImport } from './routes/settings'
+import { Route as FilesRouteImport } from './routes/files'
+import { Route as DashboardRouteImport } from './routes/dashboard'
+import { Route as ChatRouteImport } from './routes/chat'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as TasksIdRouteImport } from './routes/tasks.$id'
+import { Route as FilesSplatRouteImport } from './routes/files.$'
 
+const TerminalRoute = TerminalRouteImport.update({
+  id: '/terminal',
+  path: '/terminal',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TasksRoute = TasksRouteImport.update({
+  id: '/tasks',
+  path: '/tasks',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SettingsRoute = SettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FilesRoute = FilesRouteImport.update({
+  id: '/files',
+  path: '/files',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DashboardRoute = DashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ChatRoute = ChatRouteImport.update({
+  id: '/chat',
+  path: '/chat',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const TasksIdRoute = TasksIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => TasksRoute,
+} as any)
+const FilesSplatRoute = FilesSplatRouteImport.update({
+  id: '/$',
+  path: '/$',
+  getParentRoute: () => FilesRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/chat': typeof ChatRoute
+  '/dashboard': typeof DashboardRoute
+  '/files': typeof FilesRouteWithChildren
+  '/settings': typeof SettingsRoute
+  '/tasks': typeof TasksRouteWithChildren
+  '/terminal': typeof TerminalRoute
+  '/files/$': typeof FilesSplatRoute
+  '/tasks/$id': typeof TasksIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/chat': typeof ChatRoute
+  '/dashboard': typeof DashboardRoute
+  '/files': typeof FilesRouteWithChildren
+  '/settings': typeof SettingsRoute
+  '/tasks': typeof TasksRouteWithChildren
+  '/terminal': typeof TerminalRoute
+  '/files/$': typeof FilesSplatRoute
+  '/tasks/$id': typeof TasksIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/chat': typeof ChatRoute
+  '/dashboard': typeof DashboardRoute
+  '/files': typeof FilesRouteWithChildren
+  '/settings': typeof SettingsRoute
+  '/tasks': typeof TasksRouteWithChildren
+  '/terminal': typeof TerminalRoute
+  '/files/$': typeof FilesSplatRoute
+  '/tasks/$id': typeof TasksIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/chat'
+    | '/dashboard'
+    | '/files'
+    | '/settings'
+    | '/tasks'
+    | '/terminal'
+    | '/files/$'
+    | '/tasks/$id'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/chat'
+    | '/dashboard'
+    | '/files'
+    | '/settings'
+    | '/tasks'
+    | '/terminal'
+    | '/files/$'
+    | '/tasks/$id'
+  id:
+    | '__root__'
+    | '/'
+    | '/chat'
+    | '/dashboard'
+    | '/files'
+    | '/settings'
+    | '/tasks'
+    | '/terminal'
+    | '/files/$'
+    | '/tasks/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  ChatRoute: typeof ChatRoute
+  DashboardRoute: typeof DashboardRoute
+  FilesRoute: typeof FilesRouteWithChildren
+  SettingsRoute: typeof SettingsRoute
+  TasksRoute: typeof TasksRouteWithChildren
+  TerminalRoute: typeof TerminalRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/terminal': {
+      id: '/terminal'
+      path: '/terminal'
+      fullPath: '/terminal'
+      preLoaderRoute: typeof TerminalRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/tasks': {
+      id: '/tasks'
+      path: '/tasks'
+      fullPath: '/tasks'
+      preLoaderRoute: typeof TasksRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/settings': {
+      id: '/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof SettingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/files': {
+      id: '/files'
+      path: '/files'
+      fullPath: '/files'
+      preLoaderRoute: typeof FilesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dashboard': {
+      id: '/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof DashboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/chat': {
+      id: '/chat'
+      path: '/chat'
+      fullPath: '/chat'
+      preLoaderRoute: typeof ChatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -48,22 +196,52 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/tasks/$id': {
+      id: '/tasks/$id'
+      path: '/$id'
+      fullPath: '/tasks/$id'
+      preLoaderRoute: typeof TasksIdRouteImport
+      parentRoute: typeof TasksRoute
+    }
+    '/files/$': {
+      id: '/files/$'
+      path: '/$'
+      fullPath: '/files/$'
+      preLoaderRoute: typeof FilesSplatRouteImport
+      parentRoute: typeof FilesRoute
+    }
   }
 }
 
+interface FilesRouteChildren {
+  FilesSplatRoute: typeof FilesSplatRoute
+}
+
+const FilesRouteChildren: FilesRouteChildren = {
+  FilesSplatRoute: FilesSplatRoute,
+}
+
+const FilesRouteWithChildren = FilesRoute._addFileChildren(FilesRouteChildren)
+
+interface TasksRouteChildren {
+  TasksIdRoute: typeof TasksIdRoute
+}
+
+const TasksRouteChildren: TasksRouteChildren = {
+  TasksIdRoute: TasksIdRoute,
+}
+
+const TasksRouteWithChildren = TasksRoute._addFileChildren(TasksRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  ChatRoute: ChatRoute,
+  DashboardRoute: DashboardRoute,
+  FilesRoute: FilesRouteWithChildren,
+  SettingsRoute: SettingsRoute,
+  TasksRoute: TasksRouteWithChildren,
+  TerminalRoute: TerminalRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

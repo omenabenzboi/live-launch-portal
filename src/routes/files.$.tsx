@@ -63,7 +63,7 @@ function FileViewer() {
       <div className="mt-3 rounded-xl border border-border bg-card overflow-hidden">
         <div className="flex border-b border-border">
           <div className="select-none py-2 px-2 font-mono text-[11px] text-muted-foreground/60 border-r border-border">
-            {content.split("\n").map((_, i) => (
+            {content.split("\n").map((_: string, i: number) => (
               <div key={i} className="text-right pr-1.5">{i + 1}</div>
             ))}
           </div>
