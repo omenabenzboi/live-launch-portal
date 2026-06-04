@@ -1,7 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { getTerminalLogs, getTasks, openLogStream } from "@/lib/api";
+import { getTerminalLogs, getTasks } from "@/lib/api";
+import { openLogStream, type StreamState } from "@/lib/stream";
 import type { TerminalLine } from "@/lib/mock-data";
 import { AppShell } from "@/components/layout/AppShell";
 import { Copy, Trash2, ChevronDown, Circle } from "lucide-react";
