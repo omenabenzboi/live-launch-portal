@@ -18,9 +18,10 @@ function TasksPage() {
   const [q, setQ] = useState("");
   const { data: tasks = [] } = useQuery({ queryKey: ["tasks"], queryFn: getTasks });
 
-  const filtered = tasks.filter((t) =>
-    (filter === "All" || t.status.toLowerCase() === filter.toLowerCase()) &&
-    (q.trim() === "" || t.title.toLowerCase().includes(q.toLowerCase()))
+  const filtered = tasks.filter(
+    (t) =>
+      (filter === "All" || t.status.toLowerCase() === filter.toLowerCase()) &&
+      (q.trim() === "" || t.title.toLowerCase().includes(q.toLowerCase())),
   );
 
   return (
@@ -29,7 +30,8 @@ function TasksPage() {
         <div>
           <h1 className="text-[26px] font-semibold tracking-tight leading-tight">Tasks</h1>
           <p className="mt-0.5 text-[12.5px] text-muted-foreground">
-            <span className="text-foreground/90 font-medium">{filtered.length}</span> active · live updates
+            <span className="text-foreground/90 font-medium">{filtered.length}</span> active · live
+            updates
           </p>
         </div>
         <button className="inline-flex items-center gap-1.5 rounded-xl bg-primary px-3.5 py-2 text-[12px] font-semibold text-primary-foreground shadow-[0_0_16px_-4px] shadow-primary/60 hover:bg-primary/90 active:scale-95 transition">
@@ -86,7 +88,9 @@ function TasksPage() {
               <div className="h-full bg-primary" style={{ width: `${t.progress}%` }} />
             </div>
             <div className="mt-1 flex justify-between text-[10px] text-muted-foreground">
-              <span>{t.workspace} · {t.filesChanged} files · {t.updatedAt}</span>
+              <span>
+                {t.workspace} · {t.filesChanged} files · {t.updatedAt}
+              </span>
               <span className="font-mono">{t.progress}%</span>
             </div>
           </Link>

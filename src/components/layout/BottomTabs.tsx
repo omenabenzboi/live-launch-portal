@@ -33,7 +33,9 @@ export function BottomTabs() {
                   active ? "text-primary" : "text-muted-foreground hover:text-foreground"
                 }`}
               >
-                <span className={`grid h-7 w-12 place-items-center rounded-lg transition-colors ${active ? "bg-primary/12" : ""}`}>
+                <span
+                  className={`grid h-7 w-12 place-items-center rounded-lg transition-colors ${active ? "bg-primary/12" : ""}`}
+                >
                   <Icon className="h-[18px] w-[18px]" strokeWidth={active ? 2.2 : 1.8} />
                 </span>
                 <span>{t.label}</span>
