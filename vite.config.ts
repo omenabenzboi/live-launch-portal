@@ -26,14 +26,23 @@ export default defineConfig({
             options: { cacheName: "html-cache", networkTimeoutSeconds: 4 },
           },
           {
-            urlPattern: ({ url, sameOrigin }) => sameOrigin && /\.(js|css|woff2?)$/.test(url.pathname),
+            urlPattern: ({ url, sameOrigin }) =>
+              sameOrigin && /\.(js|css|woff2?)$/.test(url.pathname),
             handler: "CacheFirst",
-            options: { cacheName: "asset-cache", expiration: { maxEntries: 100, maxAgeSeconds: 60 * 60 * 24 * 30 } },
+            options: {
+              cacheName: "asset-cache",
+              expiration: { maxEntries: 100, maxAgeSeconds: 60 * 60 * 24 * 30 },
+            },
           },
           {
-            urlPattern: ({ url, sameOrigin }) => sameOrigin && /\/(api|files|tasks|chat)\//.test(url.pathname),
+            urlPattern: ({ url, sameOrigin }) =>
+              sameOrigin && /\/(api|files|tasks|chat)\//.test(url.pathname),
             handler: "NetworkFirst",
-            options: { cacheName: "api-cache", networkTimeoutSeconds: 5, expiration: { maxEntries: 80, maxAgeSeconds: 60 * 60 } },
+            options: {
+              cacheName: "api-cache",
+              networkTimeoutSeconds: 5,
+              expiration: { maxEntries: 80, maxAgeSeconds: 60 * 60 },
+            },
           },
         ],
       },
@@ -47,8 +56,18 @@ export default defineConfig({
         start_url: "/",
         scope: "/",
         icons: [
-          { src: "/icons/icon-192.png", sizes: "192x192", type: "image/png", purpose: "any maskable" },
-          { src: "/icons/icon-512.png", sizes: "512x512", type: "image/png", purpose: "any maskable" },
+          {
+            src: "/icons/icon-192.png",
+            sizes: "192x192",
+            type: "image/png",
+            purpose: "any maskable",
+          },
+          {
+            src: "/icons/icon-512.png",
+            sizes: "512x512",
+            type: "image/png",
+            purpose: "any maskable",
+          },
         ],
       },
     }),
