@@ -8,12 +8,14 @@ on:
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
     steps:
       - uses: actions/checkout@v4
       - uses: oven-sh/setup-bun@v2
         with:
-          bun-version: "1.3"
-      - run: bun install --frozen-lockfile
+          bun-version: "1.3.3"
+      - run: bun install --frozen-lockfile --no-cache --registry=https://registry.npmjs.org
       - run: bun run lint
       - run: bun run test
       - run: bun run build
