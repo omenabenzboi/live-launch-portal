@@ -1,7 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { getTerminalLogs, getTasks, openLogStream } from "@/lib/api";
+import { getTerminalLogs, getTasks } from "@/lib/api";
+import { openLogStream, type StreamState } from "@/lib/stream";
 import type { TerminalLine } from "@/lib/mock-data";
 import { AppShell } from "@/components/layout/AppShell";
 import { Copy, Trash2, ChevronDown, Circle } from "lucide-react";
@@ -17,11 +18,15 @@ function TerminalPage() {
   const { data: tasks = [] } = useQuery({ queryKey: ["tasks"], queryFn: getTasks });
   const [lines, setLines] = useState<TerminalLine[]>([]);
   const [taskId, setTaskId] = useState<string>("main");
+  const [streamState, setStreamState] = useState<StreamState>("connecting");
   const scrollRef = useRef<HTMLPreElement>(null);
 
   useEffect(() => { setLines(seed); }, [seed]);
   useEffect(() => {
-    const close = openLogStream((l) => setLines((prev) => [...prev, l].slice(-500)));
+    const close = openLogStream({
+      onLine: (l) => setLines((prev) => [...prev, l].slice(-500)),
+      onState: setStreamState,
+    });
     return close;
   }, []);
   useEffect(() => { scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight }); }, [lines]);
@@ -66,7 +71,7 @@ function TerminalPage() {
           <Circle className="h-2.5 w-2.5 fill-warning text-warning" />
           <Circle className="h-2.5 w-2.5 fill-primary text-primary" />
           <span className="ml-2 text-[11px] text-muted-foreground font-mono">~ / omenacore</span>
-          <span className="ml-auto text-[10px] uppercase tracking-wide text-primary">Live</span>
+          <span className={`ml-auto text-[10px] uppercase tracking-wide ${streamState === "open" ? "text-primary" : streamState === "error" ? "text-destructive" : "text-warning"}`}>{streamState}</span>
         </div>
         <pre
           ref={scrollRef}
