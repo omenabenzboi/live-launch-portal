@@ -25,13 +25,15 @@ function TasksPage() {
 
   return (
     <AppShell>
-      <div className="flex items-center justify-between gap-3">
+      <div className="flex items-end justify-between gap-3">
         <div>
-          <h1 className="text-xl font-semibold tracking-tight">Tasks</h1>
-          <p className="text-xs text-muted-foreground">{filtered.length} tasks · live</p>
+          <h1 className="text-[26px] font-semibold tracking-tight leading-tight">Tasks</h1>
+          <p className="mt-0.5 text-[12.5px] text-muted-foreground">
+            <span className="text-foreground/90 font-medium">{filtered.length}</span> active · live updates
+          </p>
         </div>
-        <button className="inline-flex items-center gap-1.5 rounded-md bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground hover:bg-primary/90">
-          <Plus className="h-3.5 w-3.5" /> New
+        <button className="inline-flex items-center gap-1.5 rounded-xl bg-primary px-3.5 py-2 text-[12px] font-semibold text-primary-foreground shadow-[0_0_16px_-4px] shadow-primary/60 hover:bg-primary/90 active:scale-95 transition">
+          <Plus className="h-3.5 w-3.5" strokeWidth={2.5} /> New Task
         </button>
       </div>
 

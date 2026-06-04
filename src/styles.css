@@ -55,7 +55,7 @@
   --secondary: oklch(0.22 0 0);
   --secondary-foreground: oklch(0.96 0.005 250);
   --muted: oklch(0.21 0 0);
-  --muted-foreground: oklch(0.68 0.01 260); /* #A1A1AA */
+  --muted-foreground: oklch(0.74 0.012 260); /* brighter, less washed-out */
   --accent: oklch(0.69 0.156 162);
   --accent-foreground: oklch(0.08 0 0);
   --destructive: oklch(0.62 0.22 25);
@@ -71,13 +71,20 @@
 @layer base {
   * { border-color: var(--color-border); }
   html, body, #root { height: 100%; }
+  html { -webkit-text-size-adjust: 100%; }
   body {
     background-color: var(--color-background);
     color: var(--color-foreground);
     font-family: var(--font-sans);
+    font-feature-settings: "cv11", "ss01", "ss03";
     -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
     overscroll-behavior-y: none;
+    text-rendering: optimizeLegibility;
   }
+  h1, h2, h3, h4 { letter-spacing: -0.02em; font-weight: 600; }
+  h1 { letter-spacing: -0.03em; }
+  ::selection { background: color-mix(in oklab, var(--primary) 35%, transparent); color: var(--foreground); }
 }
 
 @layer utilities {
@@ -91,4 +98,6 @@
     border-radius: 3px;
   }
   .scrollbar-none::-webkit-scrollbar { display: none; }
+  .scrollbar-none { scrollbar-width: none; }
+  .text-balance { text-wrap: balance; }
 }

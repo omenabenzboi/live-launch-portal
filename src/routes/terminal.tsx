@@ -75,7 +75,7 @@ function TerminalPage() {
         </div>
         <pre
           ref={scrollRef}
-          className="font-mono text-[12px] leading-relaxed p-3 h-[60vh] overflow-auto scrollbar-thin"
+          className="font-mono text-[12px] leading-relaxed p-3 h-[calc(100dvh-220px)] overflow-auto scrollbar-thin"
         >
 {lines.map((l) => (
   <span key={l.id} className={`block ${l.stream === "stderr" ? "text-destructive" : l.text.startsWith("$") ? "text-primary" : l.text.startsWith("PASS") ? "text-primary" : l.text.startsWith("FAIL") ? "text-destructive" : "text-muted-foreground"}`}>
