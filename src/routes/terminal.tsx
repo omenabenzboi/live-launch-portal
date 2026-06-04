@@ -71,7 +71,7 @@ function TerminalPage() {
           <Circle className="h-2.5 w-2.5 fill-warning text-warning" />
           <Circle className="h-2.5 w-2.5 fill-primary text-primary" />
           <span className="ml-2 text-[11px] text-muted-foreground font-mono">~ / omenacore</span>
-          <span className="ml-auto text-[10px] uppercase tracking-wide text-primary">Live</span>
+          <span className={`ml-auto text-[10px] uppercase tracking-wide ${streamState === "open" ? "text-primary" : streamState === "error" ? "text-destructive" : "text-warning"}`}>{streamState}</span>
         </div>
         <pre
           ref={scrollRef}

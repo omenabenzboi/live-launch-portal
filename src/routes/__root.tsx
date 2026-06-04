@@ -11,6 +11,8 @@ import { useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
+import { registerPWA } from "../lib/pwa";
+import { OfflineBanner } from "../components/OfflineBanner";
 import { Toaster } from "sonner";
 
 function NotFoundComponent() {
