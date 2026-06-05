@@ -144,6 +144,32 @@ When `VITE_API_BASE_URL` is set, every function (`getTasks`, `sendChatMessage`, 
 
 **To disable mocks in production:** set both env vars to non-empty values before building. No code change needed.
 
+## Authentication
+
+The API client (`src/lib/api.ts`) attaches a bearer token to every outgoing
+request and sends `credentials: "include"` so backends can also rely on
+HttpOnly session cookies.
+
+```ts
+import { setAuthToken, getAuthToken } from "@/lib/api";
+
+setAuthToken("eyJhbGciOi...");   // after sign-in (stored in localStorage)
+setAuthToken(null);              // on sign-out
+```
+
+- Header sent: `Authorization: Bearer <token>` on every `fetch()` call.
+- Storage key: `omena.auth.token` in `localStorage`.
+- The client token is **advisory only** — the backend MUST enforce
+  authentication and per-user/per-workspace authorization on every endpoint.
+  Never trust the client.
+- `useApp().permissions` (auto-approve, network, file writes) are **UI hints
+  only**. They are sent with agent requests so the backend can log intent,
+  but the backend is the source of truth for what the agent may actually do.
+- HTTP errors are mapped to safe user-facing messages by status code
+  (401/403/404/408/429/5xx). Raw response bodies are logged to the developer
+  console only — never surfaced to the UI — to avoid leaking stack traces or
+  internal schemas.
+
 ## Production build
 
 ```bash
