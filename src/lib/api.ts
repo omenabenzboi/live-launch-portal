@@ -23,12 +23,56 @@ import {
 const BASE = (import.meta.env.VITE_API_BASE_URL as string | undefined) ?? "";
 const USE_MOCK = !BASE;
 
+// Auth token storage. Backend MUST still enforce auth + permissions server-side;
+// this client-side token is only for attaching credentials to outgoing requests.
+const TOKEN_KEY = "omena.auth.token";
+export function setAuthToken(token: string | null) {
+  if (typeof localStorage === "undefined") return;
+  if (token) localStorage.setItem(TOKEN_KEY, token);
+  else localStorage.removeItem(TOKEN_KEY);
+}
+export function getAuthToken(): string | null {
+  if (typeof localStorage === "undefined") return null;
+  return localStorage.getItem(TOKEN_KEY);
+}
+
+// Map HTTP status to a safe user-facing message. Full response bodies are
+// logged to the console for developers but never surfaced to the UI, since
+// raw backend errors can leak stack traces, schemas, or internal paths.
+function safeErrorMessage(status: number): string {
+  if (status === 401) return "You are not signed in. Please sign in and try again.";
+  if (status === 403) return "You do not have permission to perform this action.";
+  if (status === 404) return "The requested resource was not found.";
+  if (status === 408 || status === 504) return "The request timed out. Please try again.";
+  if (status === 429) return "Too many requests. Please slow down and try again.";
+  if (status >= 500) return "The server encountered an error. Please try again later.";
+  if (status >= 400) return "Request failed. Please check your input and try again.";
+  return "Request failed. Please try again.";
+}
+
 async function http<T>(path: string, init?: RequestInit): Promise<T> {
+  const token = getAuthToken();
+  const authHeader: Record<string, string> = token ? { Authorization: `Bearer ${token}` } : {};
   const res = await fetch(`${BASE}${path}`, {
-    headers: { "content-type": "application/json", ...(init?.headers ?? {}) },
+    credentials: "include",
+    headers: {
+      "content-type": "application/json",
+      ...authHeader,
+      ...((init?.headers as Record<string, string>) ?? {}),
+    },
     ...init,
   });
-  if (!res.ok) throw new Error(`API ${res.status}: ${await res.text()}`);
+  if (!res.ok) {
+    // Log details for developers only; do not include raw body in thrown error.
+    try {
+      const body = await res.text();
+      // eslint-disable-next-line no-console
+      console.error(`[api] ${init?.method ?? "GET"} ${path} failed`, res.status, body);
+    } catch {
+      /* ignore */
+    }
+    throw new Error(safeErrorMessage(res.status));
+  }
   return res.json() as Promise<T>;
 }
 
