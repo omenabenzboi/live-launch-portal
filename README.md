@@ -144,6 +144,32 @@ When `VITE_API_BASE_URL` is set, every function (`getTasks`, `sendChatMessage`, 
 
 **To disable mocks in production:** set both env vars to non-empty values before building. No code change needed.
 
+## Authentication
+
+The API client (`src/lib/api.ts`) attaches a bearer token to every outgoing
+request and sends `credentials: "include"` so backends can also rely on
+HttpOnly session cookies.
+
+```ts
+import { setAuthToken, getAuthToken } from "@/lib/api";
+
+setAuthToken("eyJhbGciOi...");   // after sign-in (stored in localStorage)
+setAuthToken(null);              // on sign-out
+```
+
+- Header sent: `Authorization: Bearer <token>` on every `fetch()` call.
+- Storage key: `omena.auth.token` in `localStorage`.
+- The client token is **advisory only** — the backend MUST enforce
+  authentication and per-user/per-workspace authorization on every endpoint.
+  Never trust the client.
+- `useApp().permissions` (auto-approve, network, file writes) are **UI hints
+  only**. They are sent with agent requests so the backend can log intent,
+  but the backend is the source of truth for what the agent may actually do.
+- HTTP errors are mapped to safe user-facing messages by status code
+  (401/403/404/408/429/5xx). Raw response bodies are logged to the developer
+  console only — never surfaced to the UI — to avoid leaking stack traces or
+  internal schemas.
+
 ## Production build
 
 ```bash
@@ -264,7 +290,24 @@ bun test:watch
 bun lint
 ```
 
-`.github/workflows/ci.yml` runs lint → test → docker build on every push.
+`.github/workflows/ci.yml` runs lint → test → build, then a Docker image
+build on `main`. The install step is pinned for reproducibility:
+
+```yaml
+- uses: oven-sh/setup-bun@v2
+  with: { bun-version: "1.3.3" }
+- run: bun install --frozen-lockfile --no-cache --registry=https://registry.npmjs.org
+```
+
+Notes:
+- `--registry=https://registry.npmjs.org` forces public npm resolution, avoiding
+  stale private-registry tarball URLs that previously broke `bun install` in CI.
+- `FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true` is set workflow-wide to silence
+  the GitHub Actions Node.js 20 deprecation warning.
+- The Docker job builds against the project `Dockerfile`, which copies the
+  Vite SSR output from `/app/dist` and runs `bun dist/server/index.mjs`
+  (NOT `.output/` — that's a legacy path from older TanStack Start versions).
+
 
 ## Troubleshooting
 
@@ -276,6 +319,9 @@ bun lint
 | CORS errors | Allow your frontend origin from the backend. WS needs the same. |
 | Service worker serving stale UI | Visit `/?sw=off` once to unregister, then hard-reload. |
 | iOS notch overlap | Already handled via `env(safe-area-inset-*)` in `AppShell`, `TopHeader`, `BottomTabs`. |
+| Docker build fails with `.output directory not found` | You're on an old Dockerfile. Build output is now `dist/`. Pull latest `Dockerfile` + `.dockerignore`. |
+| CI fails on `bun install` (integrity / 401 from private registry) | Already fixed — workflow installs with `--no-cache --registry=https://registry.npmjs.org`. If forking, keep those flags. |
+| 401/403 from backend after login | Call `setAuthToken(token)` from `@/lib/api` after sign-in; verify the backend accepts `Authorization: Bearer ...` and your CORS allows the `Authorization` header + `credentials`. |
 
 ## License
 
