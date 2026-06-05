@@ -290,7 +290,24 @@ bun test:watch
 bun lint
 ```
 
-`.github/workflows/ci.yml` runs lint → test → docker build on every push.
+`.github/workflows/ci.yml` runs lint → test → build, then a Docker image
+build on `main`. The install step is pinned for reproducibility:
+
+```yaml
+- uses: oven-sh/setup-bun@v2
+  with: { bun-version: "1.3.3" }
+- run: bun install --frozen-lockfile --no-cache --registry=https://registry.npmjs.org
+```
+
+Notes:
+- `--registry=https://registry.npmjs.org` forces public npm resolution, avoiding
+  stale private-registry tarball URLs that previously broke `bun install` in CI.
+- `FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true` is set workflow-wide to silence
+  the GitHub Actions Node.js 20 deprecation warning.
+- The Docker job builds against the project `Dockerfile`, which copies the
+  Vite SSR output from `/app/dist` and runs `bun dist/server/index.mjs`
+  (NOT `.output/` — that's a legacy path from older TanStack Start versions).
+
 
 ## Troubleshooting
 
