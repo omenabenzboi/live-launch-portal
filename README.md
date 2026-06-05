@@ -150,11 +150,11 @@ When `VITE_API_BASE_URL` is set, every function (`getTasks`, `sendChatMessage`, 
 export VITE_API_BASE_URL="https://api.your-domain.com"
 export VITE_WS_URL="wss://api.your-domain.com/ws"
 
-bun run build          # → .output/
+bun run build          # → dist/
 bun run preview        # smoke-test locally on :3000
 ```
 
-Output is a standard Node/Bun server: `.output/server/index.mjs`.
+Output is a standard Node/Bun server: `dist/server/index.mjs`.
 
 ## Docker
 
