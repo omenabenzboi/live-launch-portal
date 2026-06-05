@@ -319,6 +319,9 @@ Notes:
 | CORS errors | Allow your frontend origin from the backend. WS needs the same. |
 | Service worker serving stale UI | Visit `/?sw=off` once to unregister, then hard-reload. |
 | iOS notch overlap | Already handled via `env(safe-area-inset-*)` in `AppShell`, `TopHeader`, `BottomTabs`. |
+| Docker build fails with `.output directory not found` | You're on an old Dockerfile. Build output is now `dist/`. Pull latest `Dockerfile` + `.dockerignore`. |
+| CI fails on `bun install` (integrity / 401 from private registry) | Already fixed — workflow installs with `--no-cache --registry=https://registry.npmjs.org`. If forking, keep those flags. |
+| 401/403 from backend after login | Call `setAuthToken(token)` from `@/lib/api` after sign-in; verify the backend accepts `Authorization: Bearer ...` and your CORS allows the `Authorization` header + `credentials`. |
 
 ## License
 
