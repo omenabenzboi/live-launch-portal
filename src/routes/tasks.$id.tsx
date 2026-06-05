@@ -19,9 +19,11 @@ export const Route = createFileRoute("/tasks/$id")({
       <div className="p-8 text-center text-sm text-muted-foreground">Task not found.</div>
     </AppShell>
   ),
-  errorComponent: ({ error }) => (
+  errorComponent: () => (
     <AppShell>
-      <div className="p-8 text-center text-sm text-destructive">{error.message}</div>
+      <div className="p-8 text-center text-sm text-destructive">
+        Unable to load this task. Please try again.
+      </div>
     </AppShell>
   ),
 });
