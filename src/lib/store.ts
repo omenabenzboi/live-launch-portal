@@ -1,6 +1,12 @@
 import { create } from "zustand";
 import { MODELS, WORKSPACES, AGENTS } from "./mock-data";
 
+// NOTE: `permissions` below are UI hints only. They MUST be re-validated and
+// enforced server-side per authenticated user/workspace — never trust these
+// flags coming from the client. The UI sends them as part of agent requests
+// so the backend can log the user's intent, but the backend is the source of
+// truth for what the agent is actually allowed to do.
+
 interface AppState {
   workspaceId: string;
   agentId: string;
