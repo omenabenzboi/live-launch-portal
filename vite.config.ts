@@ -9,9 +9,6 @@ export default defineConfig({
   tanstackStart: {
     server: { entry: "server" },
   },
-  build: {
-    outDir: ".output",
-  },
   plugins: [
     VitePWA({
       registerType: "autoUpdate",
