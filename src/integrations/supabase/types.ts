@@ -14,16 +14,433 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      approvals: {
+        Row: {
+          action: string
+          created_at: string
+          decided_at: string | null
+          decided_by: string | null
+          id: string
+          payload: Json
+          requested_by: string | null
+          status: Database["public"]["Enums"]["approval_status"]
+          workspace_id: string | null
+        }
+        Insert: {
+          action: string
+          created_at?: string
+          decided_at?: string | null
+          decided_by?: string | null
+          id?: string
+          payload?: Json
+          requested_by?: string | null
+          status?: Database["public"]["Enums"]["approval_status"]
+          workspace_id?: string | null
+        }
+        Update: {
+          action?: string
+          created_at?: string
+          decided_at?: string | null
+          decided_by?: string | null
+          id?: string
+          payload?: Json
+          requested_by?: string | null
+          status?: Database["public"]["Enums"]["approval_status"]
+          workspace_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "approvals_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      audit_log: {
+        Row: {
+          action: string
+          actor: string | null
+          approved_by: string | null
+          created_at: string
+          id: string
+          payload: Json
+          target: string | null
+          workspace_id: string | null
+        }
+        Insert: {
+          action: string
+          actor?: string | null
+          approved_by?: string | null
+          created_at?: string
+          id?: string
+          payload?: Json
+          target?: string | null
+          workspace_id?: string | null
+        }
+        Update: {
+          action?: string
+          actor?: string | null
+          approved_by?: string | null
+          created_at?: string
+          id?: string
+          payload?: Json
+          target?: string | null
+          workspace_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "audit_log_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      conversations: {
+        Row: {
+          created_at: string
+          id: string
+          model: string | null
+          title: string | null
+          updated_at: string
+          user_id: string
+          workspace_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          model?: string | null
+          title?: string | null
+          updated_at?: string
+          user_id: string
+          workspace_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          model?: string | null
+          title?: string | null
+          updated_at?: string
+          user_id?: string
+          workspace_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "conversations_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      messages: {
+        Row: {
+          conversation_id: string
+          created_at: string
+          id: string
+          parts: Json
+          role: string
+        }
+        Insert: {
+          conversation_id: string
+          created_at?: string
+          id?: string
+          parts: Json
+          role: string
+        }
+        Update: {
+          conversation_id?: string
+          created_at?: string
+          id?: string
+          parts?: Json
+          role?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "messages_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "conversations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      notifications: {
+        Row: {
+          body: string | null
+          created_at: string
+          id: string
+          link: string | null
+          read: boolean
+          severity: Database["public"]["Enums"]["notification_severity"]
+          title: string
+          user_id: string | null
+        }
+        Insert: {
+          body?: string | null
+          created_at?: string
+          id?: string
+          link?: string | null
+          read?: boolean
+          severity?: Database["public"]["Enums"]["notification_severity"]
+          title: string
+          user_id?: string | null
+        }
+        Update: {
+          body?: string | null
+          created_at?: string
+          id?: string
+          link?: string | null
+          read?: boolean
+          severity?: Database["public"]["Enums"]["notification_severity"]
+          title?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          display_name: string | null
+          id: string
+          updated_at: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          display_name?: string | null
+          id: string
+          updated_at?: string
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          display_name?: string | null
+          id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      provider_configs: {
+        Row: {
+          api_key_encrypted: string | null
+          base_url: string | null
+          created_at: string
+          created_by: string | null
+          default_model: string | null
+          enabled: boolean
+          id: string
+          kind: Database["public"]["Enums"]["provider_kind"]
+          models: Json
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          api_key_encrypted?: string | null
+          base_url?: string | null
+          created_at?: string
+          created_by?: string | null
+          default_model?: string | null
+          enabled?: boolean
+          id?: string
+          kind: Database["public"]["Enums"]["provider_kind"]
+          models?: Json
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          api_key_encrypted?: string | null
+          base_url?: string | null
+          created_at?: string
+          created_by?: string | null
+          default_model?: string | null
+          enabled?: boolean
+          id?: string
+          kind?: Database["public"]["Enums"]["provider_kind"]
+          models?: Json
+          name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      servers: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          daemon_token: string | null
+          daemon_url: string
+          host: string
+          id: string
+          last_seen_at: string | null
+          name: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          daemon_token?: string | null
+          daemon_url: string
+          host: string
+          id?: string
+          last_seen_at?: string | null
+          name: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          daemon_token?: string | null
+          daemon_url?: string
+          host?: string
+          id?: string
+          last_seen_at?: string | null
+          name?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      tasks: {
+        Row: {
+          agent_id: string | null
+          created_at: string
+          description: string | null
+          files_changed: number
+          id: string
+          logs: Json
+          progress: number
+          status: Database["public"]["Enums"]["task_status"]
+          title: string
+          updated_at: string
+          user_id: string | null
+          workspace_id: string | null
+        }
+        Insert: {
+          agent_id?: string | null
+          created_at?: string
+          description?: string | null
+          files_changed?: number
+          id?: string
+          logs?: Json
+          progress?: number
+          status?: Database["public"]["Enums"]["task_status"]
+          title: string
+          updated_at?: string
+          user_id?: string | null
+          workspace_id?: string | null
+        }
+        Update: {
+          agent_id?: string | null
+          created_at?: string
+          description?: string | null
+          files_changed?: number
+          id?: string
+          logs?: Json
+          progress?: number
+          status?: Database["public"]["Enums"]["task_status"]
+          title?: string
+          updated_at?: string
+          user_id?: string | null
+          workspace_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tasks_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
+      workspaces: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          env: Json
+          id: string
+          name: string
+          path: string
+          server_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          env?: Json
+          id?: string
+          name: string
+          path: string
+          server_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          env?: Json
+          id?: string
+          name?: string
+          path?: string
+          server_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "workspaces_server_id_fkey"
+            columns: ["server_id"]
+            isOneToOne: false
+            referencedRelation: "servers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "member"
+      approval_status: "pending" | "approved" | "denied" | "expired"
+      notification_severity: "info" | "success" | "warning" | "error"
+      provider_kind: "openai" | "anthropic" | "google" | "openrouter" | "custom"
+      task_status: "queued" | "waiting" | "running" | "completed" | "failed"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +567,12 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "member"],
+      approval_status: ["pending", "approved", "denied", "expired"],
+      notification_severity: ["info", "success", "warning", "error"],
+      provider_kind: ["openai", "anthropic", "google", "openrouter", "custom"],
+      task_status: ["queued", "waiting", "running", "completed", "failed"],
+    },
   },
 } as const
