@@ -6,7 +6,7 @@ import { AppShell } from "@/components/layout/AppShell";
 import { StatusBadge } from "@/components/StatusBadge";
 import { ArrowLeft, CheckCircle2, Circle, XCircle, MoreVertical } from "lucide-react";
 
-export const Route = createFileRoute("/tasks/$id")({
+export const Route = createFileRoute("/_authenticated/tasks/$id")({
   head: ({ params }) => ({ meta: [{ title: `Task ${params.id} — Omena Codex` }] }),
   loader: async ({ params }) => {
     const task = await getTask(params.id);
