@@ -326,3 +326,45 @@ Notes:
 ## License
 
 MIT. Own it, fork it, ship it.
+
+## Milestone 1 — Auth Foundation (completed)
+
+The app now boots on Lovable Cloud (Supabase) with real authentication:
+
+- All app tabs (Tasks, Chat, Terminal, Files, Settings, Dashboard) live under the `_authenticated` layout. Unauthenticated visitors are redirected to `/auth`.
+- `/auth` supports Email/Password and Google OAuth (managed by Lovable Cloud — no extra setup).
+- The first user to sign up is automatically promoted to `admin`; subsequent users get the `member` role.
+- Schema: `profiles`, `user_roles`, `workspaces`, `servers`, `provider_configs`, `conversations`, `messages`, `tasks`, `notifications`, `audit_log`, `approvals` — all RLS-protected. `provider_configs.api_key_encrypted` and `servers.daemon_token` are server-side only.
+- Server functions for provider CRUD live in `src/lib/providers.functions.ts` (admin-only via RLS).
+- Sign out from **Settings → Danger Zone → Sign Out**.
+
+### Required environment variables
+
+Client (auto-populated by Lovable Cloud, also in `.env.example`):
+
+```
+VITE_SUPABASE_URL=...
+VITE_SUPABASE_PUBLISHABLE_KEY=...
+VITE_SUPABASE_PROJECT_ID=...
+```
+
+Server-only (managed by Lovable Cloud secrets, set automatically):
+
+```
+SUPABASE_URL=...
+SUPABASE_PUBLISHABLE_KEY=...
+SUPABASE_SERVICE_ROLE_KEY=...   # never exposed to the browser
+LOVABLE_API_KEY=...             # used by the AI Gateway in M2
+```
+
+### Deploy / self-host
+
+- **Lovable hosting**: click *Publish* — auth, DB, and secrets are wired automatically.
+- **Self-host (Docker)**: `docker compose up --build`. Provide the `VITE_SUPABASE_*` variables at build time and the server-only secrets at runtime. The Cloudflare Worker SSR build runs `npm run build`; the container serves the `.output/` artifact on port 3000.
+
+### Roadmap
+
+- **M2** — Streaming chat via Lovable AI Gateway, provider selector, web search & tools, persisted conversations.
+- **M3** — `agent-daemon/` Node WebSocket server for real terminal + file system per registered server.
+- **M4** — Permission enforcement, approval queue, audit log + realtime notifications.
+- **M5** — Rate limits, secret rotation, backups, production hardening.
