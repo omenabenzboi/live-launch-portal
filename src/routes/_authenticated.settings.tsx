@@ -25,7 +25,7 @@ import {
   Check,
 } from "lucide-react";
 
-export const Route = createFileRoute("/settings")({
+export const Route = createFileRoute("/_authenticated/settings")({
   head: () => ({ meta: [{ title: "Settings — Omena Codex" }] }),
   component: SettingsPage,
 });

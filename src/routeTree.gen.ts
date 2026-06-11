@@ -9,109 +9,108 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as TerminalRouteImport } from './routes/terminal'
-import { Route as TasksRouteImport } from './routes/tasks'
-import { Route as SettingsRouteImport } from './routes/settings'
-import { Route as FilesRouteImport } from './routes/files'
-import { Route as DashboardRouteImport } from './routes/dashboard'
-import { Route as ChatRouteImport } from './routes/chat'
 import { Route as AuthRouteImport } from './routes/auth'
-import { Route as IndexRouteImport } from './routes/index'
-import { Route as TasksIdRouteImport } from './routes/tasks.$id'
-import { Route as FilesSplatRouteImport } from './routes/files.$'
+import { Route as AuthenticatedIndexRouteImport } from './routes/_authenticated.index'
+import { Route as AuthenticatedTerminalRouteImport } from './routes/_authenticated.terminal'
+import { Route as AuthenticatedTasksRouteImport } from './routes/_authenticated.tasks'
+import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated.settings'
+import { Route as AuthenticatedFilesRouteImport } from './routes/_authenticated.files'
+import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated.dashboard'
+import { Route as AuthenticatedChatRouteImport } from './routes/_authenticated.chat'
+import { Route as AuthenticatedTasksIdRouteImport } from './routes/_authenticated.tasks.$id'
+import { Route as AuthenticatedFilesSplatRouteImport } from './routes/_authenticated.files.$'
 
-const TerminalRoute = TerminalRouteImport.update({
-  id: '/terminal',
-  path: '/terminal',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const TasksRoute = TasksRouteImport.update({
-  id: '/tasks',
-  path: '/tasks',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const SettingsRoute = SettingsRouteImport.update({
-  id: '/settings',
-  path: '/settings',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const FilesRoute = FilesRouteImport.update({
-  id: '/files',
-  path: '/files',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const DashboardRoute = DashboardRouteImport.update({
-  id: '/dashboard',
-  path: '/dashboard',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ChatRoute = ChatRouteImport.update({
-  id: '/chat',
-  path: '/chat',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
   path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
+const AuthenticatedIndexRoute = AuthenticatedIndexRouteImport.update({
+  id: '/_authenticated/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const TasksIdRoute = TasksIdRouteImport.update({
+const AuthenticatedTerminalRoute = AuthenticatedTerminalRouteImport.update({
+  id: '/_authenticated/terminal',
+  path: '/terminal',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedTasksRoute = AuthenticatedTasksRouteImport.update({
+  id: '/_authenticated/tasks',
+  path: '/tasks',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedSettingsRoute = AuthenticatedSettingsRouteImport.update({
+  id: '/_authenticated/settings',
+  path: '/settings',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedFilesRoute = AuthenticatedFilesRouteImport.update({
+  id: '/_authenticated/files',
+  path: '/files',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
+  id: '/_authenticated/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedChatRoute = AuthenticatedChatRouteImport.update({
+  id: '/_authenticated/chat',
+  path: '/chat',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedTasksIdRoute = AuthenticatedTasksIdRouteImport.update({
   id: '/$id',
   path: '/$id',
-  getParentRoute: () => TasksRoute,
+  getParentRoute: () => AuthenticatedTasksRoute,
 } as any)
-const FilesSplatRoute = FilesSplatRouteImport.update({
+const AuthenticatedFilesSplatRoute = AuthenticatedFilesSplatRouteImport.update({
   id: '/$',
   path: '/$',
-  getParentRoute: () => FilesRoute,
+  getParentRoute: () => AuthenticatedFilesRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
-  '/': typeof IndexRoute
   '/auth': typeof AuthRoute
-  '/chat': typeof ChatRoute
-  '/dashboard': typeof DashboardRoute
-  '/files': typeof FilesRouteWithChildren
-  '/settings': typeof SettingsRoute
-  '/tasks': typeof TasksRouteWithChildren
-  '/terminal': typeof TerminalRoute
-  '/files/$': typeof FilesSplatRoute
-  '/tasks/$id': typeof TasksIdRoute
+  '/chat': typeof AuthenticatedChatRoute
+  '/dashboard': typeof AuthenticatedDashboardRoute
+  '/files': typeof AuthenticatedFilesRouteWithChildren
+  '/settings': typeof AuthenticatedSettingsRoute
+  '/tasks': typeof AuthenticatedTasksRouteWithChildren
+  '/terminal': typeof AuthenticatedTerminalRoute
+  '/': typeof AuthenticatedIndexRoute
+  '/files/$': typeof AuthenticatedFilesSplatRoute
+  '/tasks/$id': typeof AuthenticatedTasksIdRoute
 }
 export interface FileRoutesByTo {
-  '/': typeof IndexRoute
   '/auth': typeof AuthRoute
-  '/chat': typeof ChatRoute
-  '/dashboard': typeof DashboardRoute
-  '/files': typeof FilesRouteWithChildren
-  '/settings': typeof SettingsRoute
-  '/tasks': typeof TasksRouteWithChildren
-  '/terminal': typeof TerminalRoute
-  '/files/$': typeof FilesSplatRoute
-  '/tasks/$id': typeof TasksIdRoute
+  '/chat': typeof AuthenticatedChatRoute
+  '/dashboard': typeof AuthenticatedDashboardRoute
+  '/files': typeof AuthenticatedFilesRouteWithChildren
+  '/settings': typeof AuthenticatedSettingsRoute
+  '/tasks': typeof AuthenticatedTasksRouteWithChildren
+  '/terminal': typeof AuthenticatedTerminalRoute
+  '/': typeof AuthenticatedIndexRoute
+  '/files/$': typeof AuthenticatedFilesSplatRoute
+  '/tasks/$id': typeof AuthenticatedTasksIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
-  '/': typeof IndexRoute
   '/auth': typeof AuthRoute
-  '/chat': typeof ChatRoute
-  '/dashboard': typeof DashboardRoute
-  '/files': typeof FilesRouteWithChildren
-  '/settings': typeof SettingsRoute
-  '/tasks': typeof TasksRouteWithChildren
-  '/terminal': typeof TerminalRoute
-  '/files/$': typeof FilesSplatRoute
-  '/tasks/$id': typeof TasksIdRoute
+  '/_authenticated/chat': typeof AuthenticatedChatRoute
+  '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
+  '/_authenticated/files': typeof AuthenticatedFilesRouteWithChildren
+  '/_authenticated/settings': typeof AuthenticatedSettingsRoute
+  '/_authenticated/tasks': typeof AuthenticatedTasksRouteWithChildren
+  '/_authenticated/terminal': typeof AuthenticatedTerminalRoute
+  '/_authenticated/': typeof AuthenticatedIndexRoute
+  '/_authenticated/files/$': typeof AuthenticatedFilesSplatRoute
+  '/_authenticated/tasks/$id': typeof AuthenticatedTasksIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    | '/'
     | '/auth'
     | '/chat'
     | '/dashboard'
@@ -119,11 +118,11 @@ export interface FileRouteTypes {
     | '/settings'
     | '/tasks'
     | '/terminal'
+    | '/'
     | '/files/$'
     | '/tasks/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
-    | '/'
     | '/auth'
     | '/chat'
     | '/dashboard'
@@ -131,77 +130,36 @@ export interface FileRouteTypes {
     | '/settings'
     | '/tasks'
     | '/terminal'
+    | '/'
     | '/files/$'
     | '/tasks/$id'
   id:
     | '__root__'
-    | '/'
     | '/auth'
-    | '/chat'
-    | '/dashboard'
-    | '/files'
-    | '/settings'
-    | '/tasks'
-    | '/terminal'
-    | '/files/$'
-    | '/tasks/$id'
+    | '/_authenticated/chat'
+    | '/_authenticated/dashboard'
+    | '/_authenticated/files'
+    | '/_authenticated/settings'
+    | '/_authenticated/tasks'
+    | '/_authenticated/terminal'
+    | '/_authenticated/'
+    | '/_authenticated/files/$'
+    | '/_authenticated/tasks/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute
   AuthRoute: typeof AuthRoute
-  ChatRoute: typeof ChatRoute
-  DashboardRoute: typeof DashboardRoute
-  FilesRoute: typeof FilesRouteWithChildren
-  SettingsRoute: typeof SettingsRoute
-  TasksRoute: typeof TasksRouteWithChildren
-  TerminalRoute: typeof TerminalRoute
+  AuthenticatedChatRoute: typeof AuthenticatedChatRoute
+  AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
+  AuthenticatedFilesRoute: typeof AuthenticatedFilesRouteWithChildren
+  AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
+  AuthenticatedTasksRoute: typeof AuthenticatedTasksRouteWithChildren
+  AuthenticatedTerminalRoute: typeof AuthenticatedTerminalRoute
+  AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/terminal': {
-      id: '/terminal'
-      path: '/terminal'
-      fullPath: '/terminal'
-      preLoaderRoute: typeof TerminalRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/tasks': {
-      id: '/tasks'
-      path: '/tasks'
-      fullPath: '/tasks'
-      preLoaderRoute: typeof TasksRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/settings': {
-      id: '/settings'
-      path: '/settings'
-      fullPath: '/settings'
-      preLoaderRoute: typeof SettingsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/files': {
-      id: '/files'
-      path: '/files'
-      fullPath: '/files'
-      preLoaderRoute: typeof FilesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/dashboard': {
-      id: '/dashboard'
-      path: '/dashboard'
-      fullPath: '/dashboard'
-      preLoaderRoute: typeof DashboardRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/chat': {
-      id: '/chat'
-      path: '/chat'
-      fullPath: '/chat'
-      preLoaderRoute: typeof ChatRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/auth': {
       id: '/auth'
       path: '/auth'
@@ -209,59 +167,103 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/': {
-      id: '/'
+    '/_authenticated/': {
+      id: '/_authenticated/'
       path: '/'
       fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
+      preLoaderRoute: typeof AuthenticatedIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/tasks/$id': {
-      id: '/tasks/$id'
+    '/_authenticated/terminal': {
+      id: '/_authenticated/terminal'
+      path: '/terminal'
+      fullPath: '/terminal'
+      preLoaderRoute: typeof AuthenticatedTerminalRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/tasks': {
+      id: '/_authenticated/tasks'
+      path: '/tasks'
+      fullPath: '/tasks'
+      preLoaderRoute: typeof AuthenticatedTasksRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/settings': {
+      id: '/_authenticated/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof AuthenticatedSettingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/files': {
+      id: '/_authenticated/files'
+      path: '/files'
+      fullPath: '/files'
+      preLoaderRoute: typeof AuthenticatedFilesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/dashboard': {
+      id: '/_authenticated/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof AuthenticatedDashboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/chat': {
+      id: '/_authenticated/chat'
+      path: '/chat'
+      fullPath: '/chat'
+      preLoaderRoute: typeof AuthenticatedChatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/tasks/$id': {
+      id: '/_authenticated/tasks/$id'
       path: '/$id'
       fullPath: '/tasks/$id'
-      preLoaderRoute: typeof TasksIdRouteImport
-      parentRoute: typeof TasksRoute
+      preLoaderRoute: typeof AuthenticatedTasksIdRouteImport
+      parentRoute: typeof AuthenticatedTasksRoute
     }
-    '/files/$': {
-      id: '/files/$'
+    '/_authenticated/files/$': {
+      id: '/_authenticated/files/$'
       path: '/$'
       fullPath: '/files/$'
-      preLoaderRoute: typeof FilesSplatRouteImport
-      parentRoute: typeof FilesRoute
+      preLoaderRoute: typeof AuthenticatedFilesSplatRouteImport
+      parentRoute: typeof AuthenticatedFilesRoute
     }
   }
 }
 
-interface FilesRouteChildren {
-  FilesSplatRoute: typeof FilesSplatRoute
+interface AuthenticatedFilesRouteChildren {
+  AuthenticatedFilesSplatRoute: typeof AuthenticatedFilesSplatRoute
 }
 
-const FilesRouteChildren: FilesRouteChildren = {
-  FilesSplatRoute: FilesSplatRoute,
+const AuthenticatedFilesRouteChildren: AuthenticatedFilesRouteChildren = {
+  AuthenticatedFilesSplatRoute: AuthenticatedFilesSplatRoute,
 }
 
-const FilesRouteWithChildren = FilesRoute._addFileChildren(FilesRouteChildren)
+const AuthenticatedFilesRouteWithChildren =
+  AuthenticatedFilesRoute._addFileChildren(AuthenticatedFilesRouteChildren)
 
-interface TasksRouteChildren {
-  TasksIdRoute: typeof TasksIdRoute
+interface AuthenticatedTasksRouteChildren {
+  AuthenticatedTasksIdRoute: typeof AuthenticatedTasksIdRoute
 }
 
-const TasksRouteChildren: TasksRouteChildren = {
-  TasksIdRoute: TasksIdRoute,
+const AuthenticatedTasksRouteChildren: AuthenticatedTasksRouteChildren = {
+  AuthenticatedTasksIdRoute: AuthenticatedTasksIdRoute,
 }
 
-const TasksRouteWithChildren = TasksRoute._addFileChildren(TasksRouteChildren)
+const AuthenticatedTasksRouteWithChildren =
+  AuthenticatedTasksRoute._addFileChildren(AuthenticatedTasksRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
-  IndexRoute: IndexRoute,
   AuthRoute: AuthRoute,
-  ChatRoute: ChatRoute,
-  DashboardRoute: DashboardRoute,
-  FilesRoute: FilesRouteWithChildren,
-  SettingsRoute: SettingsRoute,
-  TasksRoute: TasksRouteWithChildren,
-  TerminalRoute: TerminalRoute,
+  AuthenticatedChatRoute: AuthenticatedChatRoute,
+  AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
+  AuthenticatedFilesRoute: AuthenticatedFilesRouteWithChildren,
+  AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,
+  AuthenticatedTasksRoute: AuthenticatedTasksRouteWithChildren,
+  AuthenticatedTerminalRoute: AuthenticatedTerminalRoute,
+  AuthenticatedIndexRoute: AuthenticatedIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

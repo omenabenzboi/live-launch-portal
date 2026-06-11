@@ -13,7 +13,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-export const Route = createFileRoute("/terminal")({
+export const Route = createFileRoute("/_authenticated/terminal")({
   head: () => ({ meta: [{ title: "Terminal — Omena Codex" }] }),
   component: TerminalPage,
 });
