@@ -5,7 +5,7 @@ import { AppShell } from "@/components/layout/AppShell";
 import { StatusBadge } from "@/components/StatusBadge";
 import { ChevronRight, AlertTriangle, CheckCircle2, Clock, Activity } from "lucide-react";
 
-export const Route = createFileRoute("/dashboard")({
+export const Route = createFileRoute("/_authenticated/dashboard")({
   head: () => ({ meta: [{ title: "Dashboard — Omena Codex" }] }),
   component: DashboardPage,
 });

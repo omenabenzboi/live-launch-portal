@@ -6,7 +6,7 @@ import { AppShell } from "@/components/layout/AppShell";
 import { ArrowLeft, Save, FileText } from "lucide-react";
 import { toast } from "sonner";
 
-export const Route = createFileRoute("/files/$")({
+export const Route = createFileRoute("/_authenticated/files/$")({
   head: () => ({ meta: [{ title: "File — Omena Codex" }] }),
   component: FileViewer,
 });

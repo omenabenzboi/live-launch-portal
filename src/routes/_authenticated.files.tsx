@@ -6,7 +6,7 @@ import type { FileNode } from "@/lib/mock-data";
 import { AppShell } from "@/components/layout/AppShell";
 import { Search, Folder, FileText, ChevronRight, MoreVertical } from "lucide-react";
 
-export const Route = createFileRoute("/files")({
+export const Route = createFileRoute("/_authenticated/files")({
   head: () => ({ meta: [{ title: "Files — Omena Codex" }] }),
   component: FilesPage,
 });

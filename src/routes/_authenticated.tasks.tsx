@@ -6,7 +6,7 @@ import { AppShell } from "@/components/layout/AppShell";
 import { StatusBadge } from "@/components/StatusBadge";
 import { Search, Plus, ChevronRight } from "lucide-react";
 
-export const Route = createFileRoute("/tasks")({
+export const Route = createFileRoute("/_authenticated/tasks")({
   head: () => ({ meta: [{ title: "Tasks — Omena Codex" }] }),
   component: TasksPage,
 });
