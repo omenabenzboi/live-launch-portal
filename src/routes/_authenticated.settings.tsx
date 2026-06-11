@@ -267,7 +267,14 @@ function SettingsPage() {
           right={<ChevronRight className="h-4 w-4 text-destructive" />}
           onClick={() => {}}
         />
-        <button className="flex w-full items-center gap-3 px-4 py-3 text-left active:bg-secondary/40">
+        <button
+          onClick={async () => {
+            const { supabase } = await import("@/integrations/supabase/client");
+            await supabase.auth.signOut();
+            window.location.href = "/auth";
+          }}
+          className="flex w-full items-center gap-3 px-4 py-3 text-left active:bg-secondary/40"
+        >
           <span className="grid h-8 w-8 place-items-center rounded-lg bg-destructive/15 text-destructive">
             <LogOut className="h-4 w-4" />
           </span>
