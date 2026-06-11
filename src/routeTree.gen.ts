@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as AuthenticatedIndexRouteImport } from './routes/_authenticated.index'
+import { Route as ApiChatRouteImport } from './routes/api/chat'
 import { Route as AuthenticatedTerminalRouteImport } from './routes/_authenticated.terminal'
 import { Route as AuthenticatedTasksRouteImport } from './routes/_authenticated.tasks'
 import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated.settings'
@@ -34,6 +35,11 @@ const AuthenticatedIndexRoute = AuthenticatedIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => AuthenticatedRoute,
+} as any)
+const ApiChatRoute = ApiChatRouteImport.update({
+  id: '/api/chat',
+  path: '/api/chat',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedTerminalRoute = AuthenticatedTerminalRouteImport.update({
   id: '/terminal',
@@ -85,6 +91,7 @@ export interface FileRoutesByFullPath {
   '/settings': typeof AuthenticatedSettingsRoute
   '/tasks': typeof AuthenticatedTasksRouteWithChildren
   '/terminal': typeof AuthenticatedTerminalRoute
+  '/api/chat': typeof ApiChatRoute
   '/files/$': typeof AuthenticatedFilesSplatRoute
   '/tasks/$id': typeof AuthenticatedTasksIdRoute
 }
@@ -96,6 +103,7 @@ export interface FileRoutesByTo {
   '/settings': typeof AuthenticatedSettingsRoute
   '/tasks': typeof AuthenticatedTasksRouteWithChildren
   '/terminal': typeof AuthenticatedTerminalRoute
+  '/api/chat': typeof ApiChatRoute
   '/': typeof AuthenticatedIndexRoute
   '/files/$': typeof AuthenticatedFilesSplatRoute
   '/tasks/$id': typeof AuthenticatedTasksIdRoute
@@ -110,6 +118,7 @@ export interface FileRoutesById {
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
   '/_authenticated/tasks': typeof AuthenticatedTasksRouteWithChildren
   '/_authenticated/terminal': typeof AuthenticatedTerminalRoute
+  '/api/chat': typeof ApiChatRoute
   '/_authenticated/': typeof AuthenticatedIndexRoute
   '/_authenticated/files/$': typeof AuthenticatedFilesSplatRoute
   '/_authenticated/tasks/$id': typeof AuthenticatedTasksIdRoute
@@ -125,6 +134,7 @@ export interface FileRouteTypes {
     | '/settings'
     | '/tasks'
     | '/terminal'
+    | '/api/chat'
     | '/files/$'
     | '/tasks/$id'
   fileRoutesByTo: FileRoutesByTo
@@ -136,6 +146,7 @@ export interface FileRouteTypes {
     | '/settings'
     | '/tasks'
     | '/terminal'
+    | '/api/chat'
     | '/'
     | '/files/$'
     | '/tasks/$id'
@@ -149,6 +160,7 @@ export interface FileRouteTypes {
     | '/_authenticated/settings'
     | '/_authenticated/tasks'
     | '/_authenticated/terminal'
+    | '/api/chat'
     | '/_authenticated/'
     | '/_authenticated/files/$'
     | '/_authenticated/tasks/$id'
@@ -157,6 +169,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
   AuthRoute: typeof AuthRoute
+  ApiChatRoute: typeof ApiChatRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -181,6 +194,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/'
       preLoaderRoute: typeof AuthenticatedIndexRouteImport
       parentRoute: typeof AuthenticatedRoute
+    }
+    '/api/chat': {
+      id: '/api/chat'
+      path: '/api/chat'
+      fullPath: '/api/chat'
+      preLoaderRoute: typeof ApiChatRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/_authenticated/terminal': {
       id: '/_authenticated/terminal'
@@ -290,6 +310,7 @@ const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
 const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRoute: AuthenticatedRouteWithChildren,
   AuthRoute: AuthRoute,
+  ApiChatRoute: ApiChatRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
