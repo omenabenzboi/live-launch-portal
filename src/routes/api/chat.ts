@@ -162,7 +162,7 @@ export const Route = createFileRoute("/api/chat")({
         return result.toUIMessageStreamResponse({
           originalMessages: messages,
           headers: {
-            "x-conversation-id": conversationId,
+            "x-conversation-id": conversationId ?? "",
           },
           onFinish: async ({ messages: finalMessages }) => {
             // Save the assistant message(s) appended this turn.
