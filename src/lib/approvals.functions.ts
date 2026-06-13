@@ -113,7 +113,17 @@ export const resolveApproval = createServerFn({ method: "POST" })
       },
     );
 
-    return { ok: true, executed: result };
+    return {
+      ok: true,
+      executed: {
+        ok: result.ok,
+        mode: result.mode,
+        risk: result.risk,
+        summary: result.summary,
+        note: result.note ?? null,
+        dataJson: result.data === undefined ? null : JSON.stringify(result.data),
+      },
+    };
   });
 
 export const cancelApproval = createServerFn({ method: "POST" })

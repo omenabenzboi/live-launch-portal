@@ -47,8 +47,17 @@ function ServersPage() {
     queryFn: () => fetchServers(),
   });
 
+  type UpsertInput = {
+    name: string;
+    host: string;
+    daemon_url: string;
+    daemon_token: string;
+    workspace_root?: string | null;
+    enabled: boolean;
+    adapter_mode: "mock" | "dry-run" | "remote-agent" | "ssh";
+  };
   const create = useMutation({
-    mutationFn: (vars: Parameters<typeof upsertFn>[0]["data"]) => upsertFn({ data: vars }),
+    mutationFn: (vars: UpsertInput) => upsertFn({ data: vars }),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["servers"] });
       setShowForm(false);
