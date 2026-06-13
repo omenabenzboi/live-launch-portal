@@ -368,3 +368,100 @@ LOVABLE_API_KEY=...             # used by the AI Gateway in M2
 - **M3** — `agent-daemon/` Node WebSocket server for real terminal + file system per registered server.
 - **M4** — Permission enforcement, approval queue, audit log + realtime notifications.
 - **M5** — Rate limits, secret rotation, backups, production hardening.
+
+---
+
+## Milestone 3 — Tool Executor & Approval Queue
+
+M3 replaces the M2 no-op tool stubs with a real execution layer that is still
+safe by default: nothing dangerous can run from Lovable hosting yet.
+
+### Tool executor
+
+`src/lib/tools/executor.server.ts` is the single entry point for every tool
+call from `/api/chat`. It:
+
+1. Classifies the call via `src/lib/tools/risk.ts` (safe / restricted /
+   dangerous) based on tool name, file paths, and command patterns.
+2. Routes by risk:
+   - **safe** → runs in the active workspace's adapter mode and returns data.
+   - **restricted / dangerous** → does NOT execute. Creates an `approvals`
+     row and returns `{ pending: true, approvalId }` to the model.
+3. Adapter modes: `mock` (default), `dry-run`, `remote-agent` (stub), `ssh`
+   (stub). Resolved from the workspace's linked `servers.adapter_mode`.
+
+### Risk classifier
+
+`src/lib/tools/risk.ts` — pure, client-safe.
+
+| Risk | Examples |
+| --- | --- |
+| safe | `plan`, `web_search`, `read_file` of non-sensitive paths |
+| restricted | `write_file`, `run_command` (build/test/git/docker/mv/cp …) |
+| dangerous | `rm -rf`, `mkfs`, `dd`, `sudo`, `curl \| sh`, paths matching `.ssh`, `.aws`, `.env`, `.git`, `id_rsa`, etc. |
+
+### Approval queue
+
+`approvals` table (extended in this milestone):
+
+| Column | Notes |
+| --- | --- |
+| `id` | UUID |
+| `requested_by` | user id |
+| `conversation_id` | links back to chat |
+| `workspace_id` | nullable |
+| `tool_name`, `action` | which tool fired |
+| `risk_level` | safe / restricted / dangerous |
+| `input_summary` | short preview shown in the UI |
+| `payload` | full JSON input |
+| `status` | pending / approved / denied / expired |
+| `expires_at` | default 24h |
+| `created_at`, `decided_at`, `decided_by` | audit fields |
+
+RLS:
+- Any authenticated user can SELECT approvals (so the UI can render them).
+- Only admins can decide approvals.
+- The original requester can update (cancel) their own row.
+
+Server functions (`src/lib/approvals.functions.ts`): `listApprovals`,
+`resolveApproval`, `cancelApproval`.
+
+UI: `/approvals` shows Pending & Resolved tabs with Approve / Reject buttons
+and a 5-second poll while on Pending. Linked from Settings → Approvals.
+
+### Server-agent contract (schema only)
+
+`servers` table now carries everything the future agent-daemon needs:
+
+| Column | Purpose |
+| --- | --- |
+| `daemon_url` | agent endpoint |
+| `daemon_token` | bearer token (server-only) |
+| `workspace_root` | path on the remote host |
+| `enabled` | toggle without deletion |
+| `adapter_mode` | mock / dry-run / remote-agent / ssh |
+| `last_health_at` | last successful health check |
+
+No outbound connection is opened yet — `remote-agent` and `ssh` modes fall
+back to mock and surface a "not yet connected" note.
+
+### Constraints honored
+
+- No AWS, no raw SSH, no shell execution from Lovable hosting.
+- Dangerous tools never auto-run; they require explicit approval.
+- Provider keys remain server-only.
+- RLS unchanged in spirit; new policy only widens UPDATE to the requester.
+- UI design preserved (dark mobile-first, rounded cards).
+
+### Still mock / dry-run
+
+- `read_file` (returns synthetic content)
+- `web_search` (returns empty results + advisory note)
+- Approved restricted / dangerous tools (execution stub awaits M4 adapter)
+
+### Ready for M4
+
+- Real workspace adapter implementations (remote-agent first).
+- Server-agent health checks (writing `last_health_at`).
+- Audit log row per approval decision + executed tool result.
+- Realtime notifications when an approval is created or resolved.

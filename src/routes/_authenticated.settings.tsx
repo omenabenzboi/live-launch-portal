@@ -24,6 +24,7 @@ import {
   LogOut,
   Check,
 } from "lucide-react";
+import { Link } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/_authenticated/settings")({
   head: () => ({ meta: [{ title: "Settings — Omena Codex" }] }),
@@ -197,6 +198,17 @@ function SettingsPage() {
             ))}
           </DropdownMenuContent>
         </DropdownMenu>
+      </Section>
+
+      <Section title="Approvals">
+        <Link to="/approvals" className="block">
+          <Row
+            icon={ShieldCheck}
+            label="Approval queue"
+            hint="Review pending agent actions"
+            right={<ChevronRight className="h-4 w-4" />}
+          />
+        </Link>
       </Section>
 
       <Section title="Permissions">

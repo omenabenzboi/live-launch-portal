@@ -17,38 +17,60 @@ export type Database = {
       approvals: {
         Row: {
           action: string
+          conversation_id: string | null
           created_at: string
           decided_at: string | null
           decided_by: string | null
+          expires_at: string | null
           id: string
+          input_summary: string | null
           payload: Json
           requested_by: string | null
+          risk_level: string
           status: Database["public"]["Enums"]["approval_status"]
+          tool_name: string | null
           workspace_id: string | null
         }
         Insert: {
           action: string
+          conversation_id?: string | null
           created_at?: string
           decided_at?: string | null
           decided_by?: string | null
+          expires_at?: string | null
           id?: string
+          input_summary?: string | null
           payload?: Json
           requested_by?: string | null
+          risk_level?: string
           status?: Database["public"]["Enums"]["approval_status"]
+          tool_name?: string | null
           workspace_id?: string | null
         }
         Update: {
           action?: string
+          conversation_id?: string | null
           created_at?: string
           decided_at?: string | null
           decided_by?: string | null
+          expires_at?: string | null
           id?: string
+          input_summary?: string | null
           payload?: Json
           requested_by?: string | null
+          risk_level?: string
           status?: Database["public"]["Enums"]["approval_status"]
+          tool_name?: string | null
           workspace_id?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "approvals_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "conversations"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "approvals_workspace_id_fkey"
             columns: ["workspace_id"]
@@ -270,40 +292,52 @@ export type Database = {
       }
       servers: {
         Row: {
+          adapter_mode: string
           created_at: string
           created_by: string | null
           daemon_token: string | null
           daemon_url: string
+          enabled: boolean
           host: string
           id: string
+          last_health_at: string | null
           last_seen_at: string | null
           name: string
           status: string
           updated_at: string
+          workspace_root: string | null
         }
         Insert: {
+          adapter_mode?: string
           created_at?: string
           created_by?: string | null
           daemon_token?: string | null
           daemon_url: string
+          enabled?: boolean
           host: string
           id?: string
+          last_health_at?: string | null
           last_seen_at?: string | null
           name: string
           status?: string
           updated_at?: string
+          workspace_root?: string | null
         }
         Update: {
+          adapter_mode?: string
           created_at?: string
           created_by?: string | null
           daemon_token?: string | null
           daemon_url?: string
+          enabled?: boolean
           host?: string
           id?: string
+          last_health_at?: string | null
           last_seen_at?: string | null
           name?: string
           status?: string
           updated_at?: string
+          workspace_root?: string | null
         }
         Relationships: []
       }
