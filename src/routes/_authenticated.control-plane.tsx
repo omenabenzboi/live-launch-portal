@@ -36,9 +36,10 @@ function ControlPlanePage() {
   const storage = useQuery({ queryKey: ["storage"], queryFn: useServerFn(listStorage) });
   const integrations = useQuery({ queryKey: ["integrations"], queryFn: useServerFn(listIntegrations) });
   const workspaces = useQuery({ queryKey: ["workspaces"], queryFn: useServerFn(listWorkspaces) });
+  const approvalsFn = useServerFn(listApprovals);
   const approvals = useQuery({
     queryKey: ["approvals", "pending"],
-    queryFn: () => useServerFn(listApprovals)({ data: { status: "pending" } }),
+    queryFn: () => approvalsFn({ data: { status: "pending" } }),
   });
 
   const sections: {
