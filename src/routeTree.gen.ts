@@ -15,9 +15,11 @@ import { Route as AuthenticatedIndexRouteImport } from './routes/_authenticated.
 import { Route as ApiChatRouteImport } from './routes/api/chat'
 import { Route as AuthenticatedTerminalRouteImport } from './routes/_authenticated.terminal'
 import { Route as AuthenticatedTasksRouteImport } from './routes/_authenticated.tasks'
+import { Route as AuthenticatedStorageRouteImport } from './routes/_authenticated.storage'
 import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated.settings'
 import { Route as AuthenticatedServersRouteImport } from './routes/_authenticated.servers'
 import { Route as AuthenticatedFilesRouteImport } from './routes/_authenticated.files'
+import { Route as AuthenticatedDatabasesRouteImport } from './routes/_authenticated.databases'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated.dashboard'
 import { Route as AuthenticatedControlPlaneRouteImport } from './routes/_authenticated.control-plane'
 import { Route as AuthenticatedChatRouteImport } from './routes/_authenticated.chat'
@@ -54,6 +56,11 @@ const AuthenticatedTasksRoute = AuthenticatedTasksRouteImport.update({
   path: '/tasks',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
+const AuthenticatedStorageRoute = AuthenticatedStorageRouteImport.update({
+  id: '/storage',
+  path: '/storage',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
 const AuthenticatedSettingsRoute = AuthenticatedSettingsRouteImport.update({
   id: '/settings',
   path: '/settings',
@@ -67,6 +74,11 @@ const AuthenticatedServersRoute = AuthenticatedServersRouteImport.update({
 const AuthenticatedFilesRoute = AuthenticatedFilesRouteImport.update({
   id: '/files',
   path: '/files',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedDatabasesRoute = AuthenticatedDatabasesRouteImport.update({
+  id: '/databases',
+  path: '/databases',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
 const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
@@ -108,9 +120,11 @@ export interface FileRoutesByFullPath {
   '/chat': typeof AuthenticatedChatRoute
   '/control-plane': typeof AuthenticatedControlPlaneRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/databases': typeof AuthenticatedDatabasesRoute
   '/files': typeof AuthenticatedFilesRouteWithChildren
   '/servers': typeof AuthenticatedServersRoute
   '/settings': typeof AuthenticatedSettingsRoute
+  '/storage': typeof AuthenticatedStorageRoute
   '/tasks': typeof AuthenticatedTasksRouteWithChildren
   '/terminal': typeof AuthenticatedTerminalRoute
   '/api/chat': typeof ApiChatRoute
@@ -123,9 +137,11 @@ export interface FileRoutesByTo {
   '/chat': typeof AuthenticatedChatRoute
   '/control-plane': typeof AuthenticatedControlPlaneRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/databases': typeof AuthenticatedDatabasesRoute
   '/files': typeof AuthenticatedFilesRouteWithChildren
   '/servers': typeof AuthenticatedServersRoute
   '/settings': typeof AuthenticatedSettingsRoute
+  '/storage': typeof AuthenticatedStorageRoute
   '/tasks': typeof AuthenticatedTasksRouteWithChildren
   '/terminal': typeof AuthenticatedTerminalRoute
   '/api/chat': typeof ApiChatRoute
@@ -141,9 +157,11 @@ export interface FileRoutesById {
   '/_authenticated/chat': typeof AuthenticatedChatRoute
   '/_authenticated/control-plane': typeof AuthenticatedControlPlaneRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
+  '/_authenticated/databases': typeof AuthenticatedDatabasesRoute
   '/_authenticated/files': typeof AuthenticatedFilesRouteWithChildren
   '/_authenticated/servers': typeof AuthenticatedServersRoute
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
+  '/_authenticated/storage': typeof AuthenticatedStorageRoute
   '/_authenticated/tasks': typeof AuthenticatedTasksRouteWithChildren
   '/_authenticated/terminal': typeof AuthenticatedTerminalRoute
   '/api/chat': typeof ApiChatRoute
@@ -160,9 +178,11 @@ export interface FileRouteTypes {
     | '/chat'
     | '/control-plane'
     | '/dashboard'
+    | '/databases'
     | '/files'
     | '/servers'
     | '/settings'
+    | '/storage'
     | '/tasks'
     | '/terminal'
     | '/api/chat'
@@ -175,9 +195,11 @@ export interface FileRouteTypes {
     | '/chat'
     | '/control-plane'
     | '/dashboard'
+    | '/databases'
     | '/files'
     | '/servers'
     | '/settings'
+    | '/storage'
     | '/tasks'
     | '/terminal'
     | '/api/chat'
@@ -192,9 +214,11 @@ export interface FileRouteTypes {
     | '/_authenticated/chat'
     | '/_authenticated/control-plane'
     | '/_authenticated/dashboard'
+    | '/_authenticated/databases'
     | '/_authenticated/files'
     | '/_authenticated/servers'
     | '/_authenticated/settings'
+    | '/_authenticated/storage'
     | '/_authenticated/tasks'
     | '/_authenticated/terminal'
     | '/api/chat'
@@ -253,6 +277,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedTasksRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/storage': {
+      id: '/_authenticated/storage'
+      path: '/storage'
+      fullPath: '/storage'
+      preLoaderRoute: typeof AuthenticatedStorageRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/settings': {
       id: '/_authenticated/settings'
       path: '/settings'
@@ -272,6 +303,13 @@ declare module '@tanstack/react-router' {
       path: '/files'
       fullPath: '/files'
       preLoaderRoute: typeof AuthenticatedFilesRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/databases': {
+      id: '/_authenticated/databases'
+      path: '/databases'
+      fullPath: '/databases'
+      preLoaderRoute: typeof AuthenticatedDatabasesRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/dashboard': {
@@ -346,9 +384,11 @@ interface AuthenticatedRouteChildren {
   AuthenticatedChatRoute: typeof AuthenticatedChatRoute
   AuthenticatedControlPlaneRoute: typeof AuthenticatedControlPlaneRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
+  AuthenticatedDatabasesRoute: typeof AuthenticatedDatabasesRoute
   AuthenticatedFilesRoute: typeof AuthenticatedFilesRouteWithChildren
   AuthenticatedServersRoute: typeof AuthenticatedServersRoute
   AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
+  AuthenticatedStorageRoute: typeof AuthenticatedStorageRoute
   AuthenticatedTasksRoute: typeof AuthenticatedTasksRouteWithChildren
   AuthenticatedTerminalRoute: typeof AuthenticatedTerminalRoute
   AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
@@ -359,9 +399,11 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedChatRoute: AuthenticatedChatRoute,
   AuthenticatedControlPlaneRoute: AuthenticatedControlPlaneRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
+  AuthenticatedDatabasesRoute: AuthenticatedDatabasesRoute,
   AuthenticatedFilesRoute: AuthenticatedFilesRouteWithChildren,
   AuthenticatedServersRoute: AuthenticatedServersRoute,
   AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,
+  AuthenticatedStorageRoute: AuthenticatedStorageRoute,
   AuthenticatedTasksRoute: AuthenticatedTasksRouteWithChildren,
   AuthenticatedTerminalRoute: AuthenticatedTerminalRoute,
   AuthenticatedIndexRoute: AuthenticatedIndexRoute,
@@ -379,3 +421,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
