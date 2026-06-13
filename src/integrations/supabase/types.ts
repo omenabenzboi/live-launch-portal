@@ -14,6 +14,63 @@ export type Database = {
   }
   public: {
     Tables: {
+      api_integrations: {
+        Row: {
+          allow_agent_use: boolean
+          auth_header_name: string | null
+          auth_token: string | null
+          auth_type: string
+          base_url: string
+          created_at: string
+          created_by: string | null
+          description: string | null
+          enabled: boolean
+          id: string
+          last_validated_at: string | null
+          last_validation_error: string | null
+          last_validation_status: string | null
+          name: string
+          secret_ref: string | null
+          updated_at: string
+        }
+        Insert: {
+          allow_agent_use?: boolean
+          auth_header_name?: string | null
+          auth_token?: string | null
+          auth_type?: string
+          base_url: string
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          enabled?: boolean
+          id?: string
+          last_validated_at?: string | null
+          last_validation_error?: string | null
+          last_validation_status?: string | null
+          name: string
+          secret_ref?: string | null
+          updated_at?: string
+        }
+        Update: {
+          allow_agent_use?: boolean
+          auth_header_name?: string | null
+          auth_token?: string | null
+          auth_type?: string
+          base_url?: string
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          enabled?: boolean
+          id?: string
+          last_validated_at?: string | null
+          last_validation_error?: string | null
+          last_validation_status?: string | null
+          name?: string
+          secret_ref?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       approvals: {
         Row: {
           action: string
@@ -159,6 +216,51 @@ export type Database = {
           },
         ]
       }
+      database_connections: {
+        Row: {
+          connection_url: string | null
+          created_at: string
+          created_by: string | null
+          db_type: string
+          enabled: boolean
+          id: string
+          last_validated_at: string | null
+          last_validation_error: string | null
+          last_validation_status: string | null
+          name: string
+          secret_ref: string | null
+          updated_at: string
+        }
+        Insert: {
+          connection_url?: string | null
+          created_at?: string
+          created_by?: string | null
+          db_type: string
+          enabled?: boolean
+          id?: string
+          last_validated_at?: string | null
+          last_validation_error?: string | null
+          last_validation_status?: string | null
+          name: string
+          secret_ref?: string | null
+          updated_at?: string
+        }
+        Update: {
+          connection_url?: string | null
+          created_at?: string
+          created_by?: string | null
+          db_type?: string
+          enabled?: boolean
+          id?: string
+          last_validated_at?: string | null
+          last_validation_error?: string | null
+          last_validation_status?: string | null
+          name?: string
+          secret_ref?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       messages: {
         Row: {
           conversation_id: string
@@ -258,6 +360,9 @@ export type Database = {
           enabled: boolean
           id: string
           kind: Database["public"]["Enums"]["provider_kind"]
+          last_validated_at: string | null
+          last_validation_error: string | null
+          last_validation_status: string | null
           models: Json
           name: string
           updated_at: string
@@ -271,6 +376,9 @@ export type Database = {
           enabled?: boolean
           id?: string
           kind: Database["public"]["Enums"]["provider_kind"]
+          last_validated_at?: string | null
+          last_validation_error?: string | null
+          last_validation_status?: string | null
           models?: Json
           name: string
           updated_at?: string
@@ -284,6 +392,9 @@ export type Database = {
           enabled?: boolean
           id?: string
           kind?: Database["public"]["Enums"]["provider_kind"]
+          last_validated_at?: string | null
+          last_validation_error?: string | null
+          last_validation_status?: string | null
           models?: Json
           name?: string
           updated_at?: string
@@ -338,6 +449,66 @@ export type Database = {
           status?: string
           updated_at?: string
           workspace_root?: string | null
+        }
+        Relationships: []
+      }
+      storage_backends: {
+        Row: {
+          access_key_id: string | null
+          bucket: string | null
+          created_at: string
+          created_by: string | null
+          enabled: boolean
+          endpoint: string | null
+          id: string
+          is_default: boolean
+          last_validated_at: string | null
+          last_validation_error: string | null
+          last_validation_status: string | null
+          name: string
+          provider_type: string
+          region: string | null
+          secret_access_key: string | null
+          secret_ref: string | null
+          updated_at: string
+        }
+        Insert: {
+          access_key_id?: string | null
+          bucket?: string | null
+          created_at?: string
+          created_by?: string | null
+          enabled?: boolean
+          endpoint?: string | null
+          id?: string
+          is_default?: boolean
+          last_validated_at?: string | null
+          last_validation_error?: string | null
+          last_validation_status?: string | null
+          name: string
+          provider_type: string
+          region?: string | null
+          secret_access_key?: string | null
+          secret_ref?: string | null
+          updated_at?: string
+        }
+        Update: {
+          access_key_id?: string | null
+          bucket?: string | null
+          created_at?: string
+          created_by?: string | null
+          enabled?: boolean
+          endpoint?: string | null
+          id?: string
+          is_default?: boolean
+          last_validated_at?: string | null
+          last_validation_error?: string | null
+          last_validation_status?: string | null
+          name?: string
+          provider_type?: string
+          region?: string | null
+          secret_access_key?: string | null
+          secret_ref?: string | null
+          updated_at?: string
         }
         Relationships: []
       }
@@ -417,36 +588,67 @@ export type Database = {
       }
       workspaces: {
         Row: {
+          active_database_id: string | null
+          active_provider_id: string | null
+          active_storage_id: string | null
+          allowed_paths: string[]
+          command_permission_level: string
           created_at: string
           created_by: string | null
+          default_branch: string | null
           env: Json
+          file_access_policy: string
           id: string
           name: string
           path: string
+          repo_url: string | null
           server_id: string | null
           updated_at: string
         }
         Insert: {
+          active_database_id?: string | null
+          active_provider_id?: string | null
+          active_storage_id?: string | null
+          allowed_paths?: string[]
+          command_permission_level?: string
           created_at?: string
           created_by?: string | null
+          default_branch?: string | null
           env?: Json
+          file_access_policy?: string
           id?: string
           name: string
           path: string
+          repo_url?: string | null
           server_id?: string | null
           updated_at?: string
         }
         Update: {
+          active_database_id?: string | null
+          active_provider_id?: string | null
+          active_storage_id?: string | null
+          allowed_paths?: string[]
+          command_permission_level?: string
           created_at?: string
           created_by?: string | null
+          default_branch?: string | null
           env?: Json
+          file_access_policy?: string
           id?: string
           name?: string
           path?: string
+          repo_url?: string | null
           server_id?: string | null
           updated_at?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "workspaces_active_provider_id_fkey"
+            columns: ["active_provider_id"]
+            isOneToOne: false
+            referencedRelation: "provider_configs"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "workspaces_server_id_fkey"
             columns: ["server_id"]
@@ -473,7 +675,13 @@ export type Database = {
       app_role: "admin" | "member"
       approval_status: "pending" | "approved" | "denied" | "expired"
       notification_severity: "info" | "success" | "warning" | "error"
-      provider_kind: "openai" | "anthropic" | "google" | "openrouter" | "custom"
+      provider_kind:
+        | "openai"
+        | "anthropic"
+        | "google"
+        | "openrouter"
+        | "custom"
+        | "ollama"
       task_status: "queued" | "waiting" | "running" | "completed" | "failed"
     }
     CompositeTypes: {
@@ -605,7 +813,14 @@ export const Constants = {
       app_role: ["admin", "member"],
       approval_status: ["pending", "approved", "denied", "expired"],
       notification_severity: ["info", "success", "warning", "error"],
-      provider_kind: ["openai", "anthropic", "google", "openrouter", "custom"],
+      provider_kind: [
+        "openai",
+        "anthropic",
+        "google",
+        "openrouter",
+        "custom",
+        "ollama",
+      ],
       task_status: ["queued", "waiting", "running", "completed", "failed"],
     },
   },

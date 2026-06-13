@@ -32,7 +32,7 @@ const upsertSchema = z.object({
   daemon_token: z.string().min(8).max(4096),
   workspace_root: z.string().max(1024).optional().nullable(),
   enabled: z.boolean().default(false),
-  adapter_mode: z.enum(["mock", "dry-run", "remote-agent", "ssh"]).default("mock"),
+  adapter_mode: z.enum(["mock", "dry-run", "remote-agent", "ssh", "self-hosted-local"]).default("mock"),
 });
 
 export const upsertServer = createServerFn({ method: "POST" })

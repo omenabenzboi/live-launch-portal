@@ -54,7 +54,7 @@ function ServersPage() {
     daemon_token: string;
     workspace_root?: string | null;
     enabled: boolean;
-    adapter_mode: "mock" | "dry-run" | "remote-agent" | "ssh";
+    adapter_mode: "mock" | "dry-run" | "remote-agent" | "ssh" | "self-hosted-local";
   };
   const create = useMutation({
     mutationFn: (vars: UpsertInput) => upsertFn({ data: vars }),
@@ -187,7 +187,7 @@ function ServerForm({
     daemon_token: string;
     workspace_root?: string | null;
     enabled: boolean;
-    adapter_mode: "mock" | "dry-run" | "remote-agent" | "ssh";
+    adapter_mode: "mock" | "dry-run" | "remote-agent" | "ssh" | "self-hosted-local";
   }) => void;
   pending: boolean;
   error: string | null;
@@ -198,7 +198,7 @@ function ServerForm({
   const [token, setToken] = useState("");
   const [root, setRoot] = useState("");
   const [enabled, setEnabled] = useState(false);
-  const [mode, setMode] = useState<"mock" | "dry-run" | "remote-agent" | "ssh">("remote-agent");
+  const [mode, setMode] = useState<"mock" | "dry-run" | "remote-agent" | "ssh" | "self-hosted-local">("remote-agent");
 
   return (
     <div className="mt-4 rounded-2xl border border-border/70 bg-card/70 p-3.5 space-y-2.5">
@@ -219,6 +219,7 @@ function ServerForm({
           <option value="dry-run">dry-run</option>
           <option value="remote-agent">remote-agent</option>
           <option value="ssh">ssh (not yet implemented)</option>
+          <option value="self-hosted-local">self-hosted-local (requires explicit enable)</option>
         </select>
       </div>
 
