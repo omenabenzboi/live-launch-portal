@@ -16,6 +16,7 @@ import { Route as ApiChatRouteImport } from './routes/api/chat'
 import { Route as AuthenticatedTerminalRouteImport } from './routes/_authenticated.terminal'
 import { Route as AuthenticatedTasksRouteImport } from './routes/_authenticated.tasks'
 import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated.settings'
+import { Route as AuthenticatedServersRouteImport } from './routes/_authenticated.servers'
 import { Route as AuthenticatedFilesRouteImport } from './routes/_authenticated.files'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated.dashboard'
 import { Route as AuthenticatedChatRouteImport } from './routes/_authenticated.chat'
@@ -57,6 +58,11 @@ const AuthenticatedSettingsRoute = AuthenticatedSettingsRouteImport.update({
   path: '/settings',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
+const AuthenticatedServersRoute = AuthenticatedServersRouteImport.update({
+  id: '/servers',
+  path: '/servers',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
 const AuthenticatedFilesRoute = AuthenticatedFilesRouteImport.update({
   id: '/files',
   path: '/files',
@@ -95,6 +101,7 @@ export interface FileRoutesByFullPath {
   '/chat': typeof AuthenticatedChatRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/files': typeof AuthenticatedFilesRouteWithChildren
+  '/servers': typeof AuthenticatedServersRoute
   '/settings': typeof AuthenticatedSettingsRoute
   '/tasks': typeof AuthenticatedTasksRouteWithChildren
   '/terminal': typeof AuthenticatedTerminalRoute
@@ -108,6 +115,7 @@ export interface FileRoutesByTo {
   '/chat': typeof AuthenticatedChatRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/files': typeof AuthenticatedFilesRouteWithChildren
+  '/servers': typeof AuthenticatedServersRoute
   '/settings': typeof AuthenticatedSettingsRoute
   '/tasks': typeof AuthenticatedTasksRouteWithChildren
   '/terminal': typeof AuthenticatedTerminalRoute
@@ -124,6 +132,7 @@ export interface FileRoutesById {
   '/_authenticated/chat': typeof AuthenticatedChatRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/files': typeof AuthenticatedFilesRouteWithChildren
+  '/_authenticated/servers': typeof AuthenticatedServersRoute
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
   '/_authenticated/tasks': typeof AuthenticatedTasksRouteWithChildren
   '/_authenticated/terminal': typeof AuthenticatedTerminalRoute
@@ -141,6 +150,7 @@ export interface FileRouteTypes {
     | '/chat'
     | '/dashboard'
     | '/files'
+    | '/servers'
     | '/settings'
     | '/tasks'
     | '/terminal'
@@ -154,6 +164,7 @@ export interface FileRouteTypes {
     | '/chat'
     | '/dashboard'
     | '/files'
+    | '/servers'
     | '/settings'
     | '/tasks'
     | '/terminal'
@@ -169,6 +180,7 @@ export interface FileRouteTypes {
     | '/_authenticated/chat'
     | '/_authenticated/dashboard'
     | '/_authenticated/files'
+    | '/_authenticated/servers'
     | '/_authenticated/settings'
     | '/_authenticated/tasks'
     | '/_authenticated/terminal'
@@ -233,6 +245,13 @@ declare module '@tanstack/react-router' {
       path: '/settings'
       fullPath: '/settings'
       preLoaderRoute: typeof AuthenticatedSettingsRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/servers': {
+      id: '/_authenticated/servers'
+      path: '/servers'
+      fullPath: '/servers'
+      preLoaderRoute: typeof AuthenticatedServersRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/files': {
@@ -307,6 +326,7 @@ interface AuthenticatedRouteChildren {
   AuthenticatedChatRoute: typeof AuthenticatedChatRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedFilesRoute: typeof AuthenticatedFilesRouteWithChildren
+  AuthenticatedServersRoute: typeof AuthenticatedServersRoute
   AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
   AuthenticatedTasksRoute: typeof AuthenticatedTasksRouteWithChildren
   AuthenticatedTerminalRoute: typeof AuthenticatedTerminalRoute
@@ -318,6 +338,7 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedChatRoute: AuthenticatedChatRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedFilesRoute: AuthenticatedFilesRouteWithChildren,
+  AuthenticatedServersRoute: AuthenticatedServersRoute,
   AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,
   AuthenticatedTasksRoute: AuthenticatedTasksRouteWithChildren,
   AuthenticatedTerminalRoute: AuthenticatedTerminalRoute,
@@ -336,3 +357,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}

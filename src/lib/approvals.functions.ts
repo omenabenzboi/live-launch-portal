@@ -1,7 +1,10 @@
-// Approval queue server functions.
+// Approval queue server functions. On approve, executes the queued tool via
+// the workspace's configured adapter and records audit + notification rows.
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { executeApproved, type AdapterMode } from "@/lib/tools/executor.server";
+import type { ToolName } from "@/lib/tools/risk";
 
 const idSchema = z.object({ id: z.string().uuid() });
 
@@ -33,6 +36,18 @@ export const resolveApproval = createServerFn({ method: "POST" })
   )
   .handler(async ({ data, context }) => {
     const { supabase, userId } = context;
+
+    // Load the approval first so we know what to execute on approve.
+    const { data: row, error: loadErr } = await supabase
+      .from("approvals")
+      .select("id, status, tool_name, action, payload, workspace_id, conversation_id, requested_by")
+      .eq("id", data.id)
+      .single();
+    if (loadErr || !row) throw new Error(loadErr?.message ?? "Approval not found");
+    if (row.status !== "pending") {
+      return { ok: false, note: "Approval already resolved." };
+    }
+
     const { error } = await supabase
       .from("approvals")
       .update({
@@ -43,7 +58,62 @@ export const resolveApproval = createServerFn({ method: "POST" })
       .eq("id", data.id)
       .eq("status", "pending");
     if (error) throw new Error(error.message);
-    return { ok: true };
+
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+
+    // Audit the decision.
+    await supabaseAdmin.from("audit_log").insert({
+      actor: userId,
+      workspace_id: row.workspace_id ?? null,
+      action: `approval.${data.decision}`,
+      target: row.id,
+      approved_by: userId,
+      payload: { tool: row.tool_name ?? row.action } as never,
+    });
+
+    // Notify the requester.
+    await supabaseAdmin.from("notifications").insert({
+      user_id: row.requested_by,
+      title: `Approval ${data.decision}: ${row.tool_name ?? row.action}`,
+      severity: data.decision === "approved" ? "success" : "warning",
+      link: "/approvals",
+    });
+
+    if (data.decision !== "approved") return { ok: true };
+
+    // Resolve adapter mode for execution.
+    let adapterMode: AdapterMode = "mock";
+    if (row.workspace_id) {
+      const { data: ws } = await supabaseAdmin
+        .from("workspaces")
+        .select("server_id")
+        .eq("id", row.workspace_id)
+        .maybeSingle();
+      const serverId = (ws as { server_id?: string | null } | null)?.server_id;
+      if (serverId) {
+        const { data: srv } = await supabaseAdmin
+          .from("servers")
+          .select("adapter_mode, enabled")
+          .eq("id", serverId)
+          .maybeSingle();
+        const s = srv as { adapter_mode?: string | null; enabled?: boolean | null } | null;
+        if (s?.enabled && s.adapter_mode) adapterMode = s.adapter_mode as AdapterMode;
+      }
+    }
+
+    const result = await executeApproved(
+      (row.tool_name ?? row.action) as ToolName,
+      (row.payload ?? {}) as Record<string, unknown>,
+      {
+        supabase,
+        userId,
+        conversationId: row.conversation_id,
+        workspaceId: row.workspace_id,
+        adapterMode,
+      },
+    );
+
+    return { ok: true, executed: result };
   });
 
 export const cancelApproval = createServerFn({ method: "POST" })
