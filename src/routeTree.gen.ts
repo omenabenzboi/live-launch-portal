@@ -25,6 +25,7 @@ import { Route as AuthenticatedDatabasesRouteImport } from './routes/_authentica
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated.dashboard'
 import { Route as AuthenticatedControlPlaneRouteImport } from './routes/_authenticated.control-plane'
 import { Route as AuthenticatedChatRouteImport } from './routes/_authenticated.chat'
+import { Route as AuthenticatedAuditLogRouteImport } from './routes/_authenticated.audit-log'
 import { Route as AuthenticatedApprovalsRouteImport } from './routes/_authenticated.approvals'
 import { Route as AuthenticatedTasksIdRouteImport } from './routes/_authenticated.tasks.$id'
 import { Route as AuthenticatedFilesSplatRouteImport } from './routes/_authenticated.files.$'
@@ -110,6 +111,11 @@ const AuthenticatedChatRoute = AuthenticatedChatRouteImport.update({
   path: '/chat',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
+const AuthenticatedAuditLogRoute = AuthenticatedAuditLogRouteImport.update({
+  id: '/audit-log',
+  path: '/audit-log',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
 const AuthenticatedApprovalsRoute = AuthenticatedApprovalsRouteImport.update({
   id: '/approvals',
   path: '/approvals',
@@ -130,6 +136,7 @@ export interface FileRoutesByFullPath {
   '/': typeof AuthenticatedIndexRoute
   '/auth': typeof AuthRoute
   '/approvals': typeof AuthenticatedApprovalsRoute
+  '/audit-log': typeof AuthenticatedAuditLogRoute
   '/chat': typeof AuthenticatedChatRoute
   '/control-plane': typeof AuthenticatedControlPlaneRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
@@ -149,6 +156,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/approvals': typeof AuthenticatedApprovalsRoute
+  '/audit-log': typeof AuthenticatedAuditLogRoute
   '/chat': typeof AuthenticatedChatRoute
   '/control-plane': typeof AuthenticatedControlPlaneRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
@@ -171,6 +179,7 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteWithChildren
   '/auth': typeof AuthRoute
   '/_authenticated/approvals': typeof AuthenticatedApprovalsRoute
+  '/_authenticated/audit-log': typeof AuthenticatedAuditLogRoute
   '/_authenticated/chat': typeof AuthenticatedChatRoute
   '/_authenticated/control-plane': typeof AuthenticatedControlPlaneRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
@@ -194,6 +203,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/approvals'
+    | '/audit-log'
     | '/chat'
     | '/control-plane'
     | '/dashboard'
@@ -213,6 +223,7 @@ export interface FileRouteTypes {
   to:
     | '/auth'
     | '/approvals'
+    | '/audit-log'
     | '/chat'
     | '/control-plane'
     | '/dashboard'
@@ -234,6 +245,7 @@ export interface FileRouteTypes {
     | '/_authenticated'
     | '/auth'
     | '/_authenticated/approvals'
+    | '/_authenticated/audit-log'
     | '/_authenticated/chat'
     | '/_authenticated/control-plane'
     | '/_authenticated/dashboard'
@@ -372,6 +384,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedChatRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/audit-log': {
+      id: '/_authenticated/audit-log'
+      path: '/audit-log'
+      fullPath: '/audit-log'
+      preLoaderRoute: typeof AuthenticatedAuditLogRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/approvals': {
       id: '/_authenticated/approvals'
       path: '/approvals'
@@ -420,6 +439,7 @@ const AuthenticatedTasksRouteWithChildren =
 
 interface AuthenticatedRouteChildren {
   AuthenticatedApprovalsRoute: typeof AuthenticatedApprovalsRoute
+  AuthenticatedAuditLogRoute: typeof AuthenticatedAuditLogRoute
   AuthenticatedChatRoute: typeof AuthenticatedChatRoute
   AuthenticatedControlPlaneRoute: typeof AuthenticatedControlPlaneRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
@@ -437,6 +457,7 @@ interface AuthenticatedRouteChildren {
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedApprovalsRoute: AuthenticatedApprovalsRoute,
+  AuthenticatedAuditLogRoute: AuthenticatedAuditLogRoute,
   AuthenticatedChatRoute: AuthenticatedChatRoute,
   AuthenticatedControlPlaneRoute: AuthenticatedControlPlaneRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
