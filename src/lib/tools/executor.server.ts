@@ -48,7 +48,7 @@ async function audit(
       workspace_id: ctx.workspaceId ?? null,
       action,
       target,
-      payload,
+      payload: payload as never,
     });
   } catch (e) {
     console.error("[audit] insert failed", e);

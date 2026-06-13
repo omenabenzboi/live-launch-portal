@@ -80,7 +80,7 @@ export const healthCheckServer = createServerFn({ method: "POST" })
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { data: srv, error } = await supabaseAdmin
       .from("servers")
-      .select("daemon_url, daemon_token")
+      .select("daemon_url, daemon_token, enabled")
       .eq("id", data.id)
       .single();
     if (error || !srv) throw new Error(error?.message ?? "Server not found");
