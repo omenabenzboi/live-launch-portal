@@ -1,0 +1,99 @@
+// Tool risk classification — client-safe (no server imports).
+// Used by both the server executor and any UI that wants to label a tool call.
+
+export type RiskLevel = "safe" | "restricted" | "dangerous";
+export type ToolName =
+  | "plan"
+  | "web_search"
+  | "read_file"
+  | "write_file"
+  | "run_command";
+
+const DANGEROUS_PATH_PATTERNS = [
+  /(^|\/)\.ssh(\/|$)/i,
+  /(^|\/)\.aws(\/|$)/i,
+  /(^|\/)\.git(\/|$)/i,
+  /(^|\/)\.env(\.|$)/i,
+  /id_rsa|id_ed25519|credentials/i,
+];
+
+const DANGEROUS_COMMAND_PATTERNS = [
+  /\brm\s+-rf?\b/i,
+  /\bmkfs\b/i,
+  /\bdd\s+if=/i,
+  /:\(\)\s*\{\s*:\s*\|\s*:\s*&\s*\}\s*;:/, // fork bomb
+  /\bshutdown\b|\breboot\b|\bhalt\b/i,
+  /\bchown\s+-R\s+\//i,
+  /\bchmod\s+-R\s+0?777\s+\//i,
+  /\bcurl\b.+\|\s*(sh|bash|zsh)\b/i,
+  /\bwget\b.+\|\s*(sh|bash|zsh)\b/i,
+  /\b(printenv|env)\b/i,
+  /\bcat\s+.*\.(env|pem|key)\b/i,
+  /\bsudo\b/i,
+];
+
+const RESTRICTED_COMMAND_PATTERNS = [
+  /\b(npm|bun|pnpm|yarn)\s+(install|i|add|remove|run|test)\b/i,
+  /\b(git)\s+(commit|push|reset|checkout|rebase|merge)\b/i,
+  /\b(make|cargo|go)\s+/i,
+  /\b(docker|kubectl|terraform)\b/i,
+  /\bmv\b|\bcp\b|\btouch\b|\bmkdir\b/i,
+];
+
+export interface RiskInput {
+  tool: ToolName;
+  input: Record<string, unknown>;
+}
+
+export function classifyRisk({ tool, input }: RiskInput): {
+  risk: RiskLevel;
+  reason: string;
+} {
+  if (tool === "plan") return { risk: "safe", reason: "Planning is read-only." };
+  if (tool === "web_search")
+    return { risk: "safe", reason: "External web lookup, no workspace mutation." };
+
+  if (tool === "read_file") {
+    const path = String(input.path ?? "");
+    if (DANGEROUS_PATH_PATTERNS.some((r) => r.test(path)))
+      return { risk: "dangerous", reason: `Reads a sensitive path (${path}).` };
+    return { risk: "safe", reason: "Read-only access to workspace file." };
+  }
+
+  if (tool === "write_file") {
+    const path = String(input.path ?? "");
+    if (DANGEROUS_PATH_PATTERNS.some((r) => r.test(path)))
+      return { risk: "dangerous", reason: `Writes to a sensitive path (${path}).` };
+    return { risk: "restricted", reason: "Mutates a workspace file." };
+  }
+
+  if (tool === "run_command") {
+    const cmd = String(input.command ?? "");
+    if (DANGEROUS_COMMAND_PATTERNS.some((r) => r.test(cmd)))
+      return { risk: "dangerous", reason: "Command matches a destructive pattern." };
+    if (RESTRICTED_COMMAND_PATTERNS.some((r) => r.test(cmd)))
+      return { risk: "restricted", reason: "Build/test/package management command." };
+    return { risk: "restricted", reason: "Shell command — requires approval by default." };
+  }
+
+  return { risk: "restricted", reason: "Unknown tool, default to restricted." };
+}
+
+export function summarizeInput(tool: ToolName, input: Record<string, unknown>): string {
+  switch (tool) {
+    case "plan":
+      return `${(input.steps as string[] | undefined)?.length ?? 0} steps`;
+    case "web_search":
+      return String(input.query ?? "").slice(0, 120);
+    case "read_file":
+      return String(input.path ?? "");
+    case "write_file": {
+      const len = String(input.content ?? "").length;
+      return `${input.path ?? ""} · ${len} bytes`;
+    }
+    case "run_command":
+      return String(input.command ?? "").slice(0, 200);
+    default:
+      return JSON.stringify(input).slice(0, 200);
+  }
+}
