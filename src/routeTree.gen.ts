@@ -19,6 +19,7 @@ import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticat
 import { Route as AuthenticatedServersRouteImport } from './routes/_authenticated.servers'
 import { Route as AuthenticatedFilesRouteImport } from './routes/_authenticated.files'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated.dashboard'
+import { Route as AuthenticatedControlPlaneRouteImport } from './routes/_authenticated.control-plane'
 import { Route as AuthenticatedChatRouteImport } from './routes/_authenticated.chat'
 import { Route as AuthenticatedApprovalsRouteImport } from './routes/_authenticated.approvals'
 import { Route as AuthenticatedTasksIdRouteImport } from './routes/_authenticated.tasks.$id'
@@ -73,6 +74,12 @@ const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   path: '/dashboard',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
+const AuthenticatedControlPlaneRoute =
+  AuthenticatedControlPlaneRouteImport.update({
+    id: '/control-plane',
+    path: '/control-plane',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
 const AuthenticatedChatRoute = AuthenticatedChatRouteImport.update({
   id: '/chat',
   path: '/chat',
@@ -99,6 +106,7 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/approvals': typeof AuthenticatedApprovalsRoute
   '/chat': typeof AuthenticatedChatRoute
+  '/control-plane': typeof AuthenticatedControlPlaneRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/files': typeof AuthenticatedFilesRouteWithChildren
   '/servers': typeof AuthenticatedServersRoute
@@ -113,6 +121,7 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/approvals': typeof AuthenticatedApprovalsRoute
   '/chat': typeof AuthenticatedChatRoute
+  '/control-plane': typeof AuthenticatedControlPlaneRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/files': typeof AuthenticatedFilesRouteWithChildren
   '/servers': typeof AuthenticatedServersRoute
@@ -130,6 +139,7 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/_authenticated/approvals': typeof AuthenticatedApprovalsRoute
   '/_authenticated/chat': typeof AuthenticatedChatRoute
+  '/_authenticated/control-plane': typeof AuthenticatedControlPlaneRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/files': typeof AuthenticatedFilesRouteWithChildren
   '/_authenticated/servers': typeof AuthenticatedServersRoute
@@ -148,6 +158,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/approvals'
     | '/chat'
+    | '/control-plane'
     | '/dashboard'
     | '/files'
     | '/servers'
@@ -162,6 +173,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/approvals'
     | '/chat'
+    | '/control-plane'
     | '/dashboard'
     | '/files'
     | '/servers'
@@ -178,6 +190,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/_authenticated/approvals'
     | '/_authenticated/chat'
+    | '/_authenticated/control-plane'
     | '/_authenticated/dashboard'
     | '/_authenticated/files'
     | '/_authenticated/servers'
@@ -268,6 +281,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDashboardRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/control-plane': {
+      id: '/_authenticated/control-plane'
+      path: '/control-plane'
+      fullPath: '/control-plane'
+      preLoaderRoute: typeof AuthenticatedControlPlaneRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/chat': {
       id: '/_authenticated/chat'
       path: '/chat'
@@ -324,6 +344,7 @@ const AuthenticatedTasksRouteWithChildren =
 interface AuthenticatedRouteChildren {
   AuthenticatedApprovalsRoute: typeof AuthenticatedApprovalsRoute
   AuthenticatedChatRoute: typeof AuthenticatedChatRoute
+  AuthenticatedControlPlaneRoute: typeof AuthenticatedControlPlaneRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedFilesRoute: typeof AuthenticatedFilesRouteWithChildren
   AuthenticatedServersRoute: typeof AuthenticatedServersRoute
@@ -336,6 +357,7 @@ interface AuthenticatedRouteChildren {
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedApprovalsRoute: AuthenticatedApprovalsRoute,
   AuthenticatedChatRoute: AuthenticatedChatRoute,
+  AuthenticatedControlPlaneRoute: AuthenticatedControlPlaneRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedFilesRoute: AuthenticatedFilesRouteWithChildren,
   AuthenticatedServersRoute: AuthenticatedServersRoute,
@@ -357,3 +379,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
