@@ -14,7 +14,7 @@ import {
   type DaemonConfig,
 } from "./remote-agent.server";
 
-export type AdapterMode = "mock" | "dry-run" | "remote-agent" | "ssh";
+export type AdapterMode = "mock" | "dry-run" | "remote-agent" | "ssh" | "self-hosted-local";
 
 export interface ExecContext {
   supabase: SupabaseClient;
