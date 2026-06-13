@@ -13,14 +13,19 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as AuthenticatedIndexRouteImport } from './routes/_authenticated.index'
 import { Route as ApiChatRouteImport } from './routes/api/chat'
+import { Route as AuthenticatedWorkspacesRouteImport } from './routes/_authenticated.workspaces'
 import { Route as AuthenticatedTerminalRouteImport } from './routes/_authenticated.terminal'
 import { Route as AuthenticatedTasksRouteImport } from './routes/_authenticated.tasks'
+import { Route as AuthenticatedStorageRouteImport } from './routes/_authenticated.storage'
 import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated.settings'
 import { Route as AuthenticatedServersRouteImport } from './routes/_authenticated.servers'
+import { Route as AuthenticatedIntegrationsRouteImport } from './routes/_authenticated.integrations'
 import { Route as AuthenticatedFilesRouteImport } from './routes/_authenticated.files'
+import { Route as AuthenticatedDatabasesRouteImport } from './routes/_authenticated.databases'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated.dashboard'
 import { Route as AuthenticatedControlPlaneRouteImport } from './routes/_authenticated.control-plane'
 import { Route as AuthenticatedChatRouteImport } from './routes/_authenticated.chat'
+import { Route as AuthenticatedAuditLogRouteImport } from './routes/_authenticated.audit-log'
 import { Route as AuthenticatedApprovalsRouteImport } from './routes/_authenticated.approvals'
 import { Route as AuthenticatedTasksIdRouteImport } from './routes/_authenticated.tasks.$id'
 import { Route as AuthenticatedFilesSplatRouteImport } from './routes/_authenticated.files.$'
@@ -44,6 +49,11 @@ const ApiChatRoute = ApiChatRouteImport.update({
   path: '/api/chat',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedWorkspacesRoute = AuthenticatedWorkspacesRouteImport.update({
+  id: '/workspaces',
+  path: '/workspaces',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
 const AuthenticatedTerminalRoute = AuthenticatedTerminalRouteImport.update({
   id: '/terminal',
   path: '/terminal',
@@ -52,6 +62,11 @@ const AuthenticatedTerminalRoute = AuthenticatedTerminalRouteImport.update({
 const AuthenticatedTasksRoute = AuthenticatedTasksRouteImport.update({
   id: '/tasks',
   path: '/tasks',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedStorageRoute = AuthenticatedStorageRouteImport.update({
+  id: '/storage',
+  path: '/storage',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
 const AuthenticatedSettingsRoute = AuthenticatedSettingsRouteImport.update({
@@ -64,9 +79,20 @@ const AuthenticatedServersRoute = AuthenticatedServersRouteImport.update({
   path: '/servers',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
+const AuthenticatedIntegrationsRoute =
+  AuthenticatedIntegrationsRouteImport.update({
+    id: '/integrations',
+    path: '/integrations',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
 const AuthenticatedFilesRoute = AuthenticatedFilesRouteImport.update({
   id: '/files',
   path: '/files',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedDatabasesRoute = AuthenticatedDatabasesRouteImport.update({
+  id: '/databases',
+  path: '/databases',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
 const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
@@ -83,6 +109,11 @@ const AuthenticatedControlPlaneRoute =
 const AuthenticatedChatRoute = AuthenticatedChatRouteImport.update({
   id: '/chat',
   path: '/chat',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedAuditLogRoute = AuthenticatedAuditLogRouteImport.update({
+  id: '/audit-log',
+  path: '/audit-log',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
 const AuthenticatedApprovalsRoute = AuthenticatedApprovalsRouteImport.update({
@@ -105,14 +136,19 @@ export interface FileRoutesByFullPath {
   '/': typeof AuthenticatedIndexRoute
   '/auth': typeof AuthRoute
   '/approvals': typeof AuthenticatedApprovalsRoute
+  '/audit-log': typeof AuthenticatedAuditLogRoute
   '/chat': typeof AuthenticatedChatRoute
   '/control-plane': typeof AuthenticatedControlPlaneRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/databases': typeof AuthenticatedDatabasesRoute
   '/files': typeof AuthenticatedFilesRouteWithChildren
+  '/integrations': typeof AuthenticatedIntegrationsRoute
   '/servers': typeof AuthenticatedServersRoute
   '/settings': typeof AuthenticatedSettingsRoute
+  '/storage': typeof AuthenticatedStorageRoute
   '/tasks': typeof AuthenticatedTasksRouteWithChildren
   '/terminal': typeof AuthenticatedTerminalRoute
+  '/workspaces': typeof AuthenticatedWorkspacesRoute
   '/api/chat': typeof ApiChatRoute
   '/files/$': typeof AuthenticatedFilesSplatRoute
   '/tasks/$id': typeof AuthenticatedTasksIdRoute
@@ -120,14 +156,19 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/approvals': typeof AuthenticatedApprovalsRoute
+  '/audit-log': typeof AuthenticatedAuditLogRoute
   '/chat': typeof AuthenticatedChatRoute
   '/control-plane': typeof AuthenticatedControlPlaneRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/databases': typeof AuthenticatedDatabasesRoute
   '/files': typeof AuthenticatedFilesRouteWithChildren
+  '/integrations': typeof AuthenticatedIntegrationsRoute
   '/servers': typeof AuthenticatedServersRoute
   '/settings': typeof AuthenticatedSettingsRoute
+  '/storage': typeof AuthenticatedStorageRoute
   '/tasks': typeof AuthenticatedTasksRouteWithChildren
   '/terminal': typeof AuthenticatedTerminalRoute
+  '/workspaces': typeof AuthenticatedWorkspacesRoute
   '/api/chat': typeof ApiChatRoute
   '/': typeof AuthenticatedIndexRoute
   '/files/$': typeof AuthenticatedFilesSplatRoute
@@ -138,14 +179,19 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteWithChildren
   '/auth': typeof AuthRoute
   '/_authenticated/approvals': typeof AuthenticatedApprovalsRoute
+  '/_authenticated/audit-log': typeof AuthenticatedAuditLogRoute
   '/_authenticated/chat': typeof AuthenticatedChatRoute
   '/_authenticated/control-plane': typeof AuthenticatedControlPlaneRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
+  '/_authenticated/databases': typeof AuthenticatedDatabasesRoute
   '/_authenticated/files': typeof AuthenticatedFilesRouteWithChildren
+  '/_authenticated/integrations': typeof AuthenticatedIntegrationsRoute
   '/_authenticated/servers': typeof AuthenticatedServersRoute
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
+  '/_authenticated/storage': typeof AuthenticatedStorageRoute
   '/_authenticated/tasks': typeof AuthenticatedTasksRouteWithChildren
   '/_authenticated/terminal': typeof AuthenticatedTerminalRoute
+  '/_authenticated/workspaces': typeof AuthenticatedWorkspacesRoute
   '/api/chat': typeof ApiChatRoute
   '/_authenticated/': typeof AuthenticatedIndexRoute
   '/_authenticated/files/$': typeof AuthenticatedFilesSplatRoute
@@ -157,14 +203,19 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/approvals'
+    | '/audit-log'
     | '/chat'
     | '/control-plane'
     | '/dashboard'
+    | '/databases'
     | '/files'
+    | '/integrations'
     | '/servers'
     | '/settings'
+    | '/storage'
     | '/tasks'
     | '/terminal'
+    | '/workspaces'
     | '/api/chat'
     | '/files/$'
     | '/tasks/$id'
@@ -172,14 +223,19 @@ export interface FileRouteTypes {
   to:
     | '/auth'
     | '/approvals'
+    | '/audit-log'
     | '/chat'
     | '/control-plane'
     | '/dashboard'
+    | '/databases'
     | '/files'
+    | '/integrations'
     | '/servers'
     | '/settings'
+    | '/storage'
     | '/tasks'
     | '/terminal'
+    | '/workspaces'
     | '/api/chat'
     | '/'
     | '/files/$'
@@ -189,14 +245,19 @@ export interface FileRouteTypes {
     | '/_authenticated'
     | '/auth'
     | '/_authenticated/approvals'
+    | '/_authenticated/audit-log'
     | '/_authenticated/chat'
     | '/_authenticated/control-plane'
     | '/_authenticated/dashboard'
+    | '/_authenticated/databases'
     | '/_authenticated/files'
+    | '/_authenticated/integrations'
     | '/_authenticated/servers'
     | '/_authenticated/settings'
+    | '/_authenticated/storage'
     | '/_authenticated/tasks'
     | '/_authenticated/terminal'
+    | '/_authenticated/workspaces'
     | '/api/chat'
     | '/_authenticated/'
     | '/_authenticated/files/$'
@@ -239,6 +300,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiChatRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/workspaces': {
+      id: '/_authenticated/workspaces'
+      path: '/workspaces'
+      fullPath: '/workspaces'
+      preLoaderRoute: typeof AuthenticatedWorkspacesRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/terminal': {
       id: '/_authenticated/terminal'
       path: '/terminal'
@@ -251,6 +319,13 @@ declare module '@tanstack/react-router' {
       path: '/tasks'
       fullPath: '/tasks'
       preLoaderRoute: typeof AuthenticatedTasksRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/storage': {
+      id: '/_authenticated/storage'
+      path: '/storage'
+      fullPath: '/storage'
+      preLoaderRoute: typeof AuthenticatedStorageRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/settings': {
@@ -267,11 +342,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedServersRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/integrations': {
+      id: '/_authenticated/integrations'
+      path: '/integrations'
+      fullPath: '/integrations'
+      preLoaderRoute: typeof AuthenticatedIntegrationsRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/files': {
       id: '/_authenticated/files'
       path: '/files'
       fullPath: '/files'
       preLoaderRoute: typeof AuthenticatedFilesRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/databases': {
+      id: '/_authenticated/databases'
+      path: '/databases'
+      fullPath: '/databases'
+      preLoaderRoute: typeof AuthenticatedDatabasesRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/dashboard': {
@@ -293,6 +382,13 @@ declare module '@tanstack/react-router' {
       path: '/chat'
       fullPath: '/chat'
       preLoaderRoute: typeof AuthenticatedChatRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/audit-log': {
+      id: '/_authenticated/audit-log'
+      path: '/audit-log'
+      fullPath: '/audit-log'
+      preLoaderRoute: typeof AuthenticatedAuditLogRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/approvals': {
@@ -343,27 +439,37 @@ const AuthenticatedTasksRouteWithChildren =
 
 interface AuthenticatedRouteChildren {
   AuthenticatedApprovalsRoute: typeof AuthenticatedApprovalsRoute
+  AuthenticatedAuditLogRoute: typeof AuthenticatedAuditLogRoute
   AuthenticatedChatRoute: typeof AuthenticatedChatRoute
   AuthenticatedControlPlaneRoute: typeof AuthenticatedControlPlaneRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
+  AuthenticatedDatabasesRoute: typeof AuthenticatedDatabasesRoute
   AuthenticatedFilesRoute: typeof AuthenticatedFilesRouteWithChildren
+  AuthenticatedIntegrationsRoute: typeof AuthenticatedIntegrationsRoute
   AuthenticatedServersRoute: typeof AuthenticatedServersRoute
   AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
+  AuthenticatedStorageRoute: typeof AuthenticatedStorageRoute
   AuthenticatedTasksRoute: typeof AuthenticatedTasksRouteWithChildren
   AuthenticatedTerminalRoute: typeof AuthenticatedTerminalRoute
+  AuthenticatedWorkspacesRoute: typeof AuthenticatedWorkspacesRoute
   AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
 }
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedApprovalsRoute: AuthenticatedApprovalsRoute,
+  AuthenticatedAuditLogRoute: AuthenticatedAuditLogRoute,
   AuthenticatedChatRoute: AuthenticatedChatRoute,
   AuthenticatedControlPlaneRoute: AuthenticatedControlPlaneRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
+  AuthenticatedDatabasesRoute: AuthenticatedDatabasesRoute,
   AuthenticatedFilesRoute: AuthenticatedFilesRouteWithChildren,
+  AuthenticatedIntegrationsRoute: AuthenticatedIntegrationsRoute,
   AuthenticatedServersRoute: AuthenticatedServersRoute,
   AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,
+  AuthenticatedStorageRoute: AuthenticatedStorageRoute,
   AuthenticatedTasksRoute: AuthenticatedTasksRouteWithChildren,
   AuthenticatedTerminalRoute: AuthenticatedTerminalRoute,
+  AuthenticatedWorkspacesRoute: AuthenticatedWorkspacesRoute,
   AuthenticatedIndexRoute: AuthenticatedIndexRoute,
 }
 

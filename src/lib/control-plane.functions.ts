@@ -1,7 +1,7 @@
-// Control-plane server functions for the M4 settings sections:
-// database connections, storage backends, API integrations, workspace controls.
-// Secret columns (connection_url, secret_access_key, auth_token) are write-only
-// from the frontend: client SELECT grants exclude them; we never echo them back.
+// Control-plane server functions for M4B: per-section CRUD + audit-log
+// enrichment for databases, storage, API integrations, and workspaces.
+// Secret columns are write-only from the frontend — SELECT grants exclude
+// them; we never echo them back.
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
@@ -11,6 +11,25 @@ async function assertAdmin(supabase: SupabaseClient, userId: string) {
   const { data, error } = await supabase.rpc("has_role", { _user_id: userId, _role: "admin" });
   if (error) throw new Error(error.message);
   if (!data) throw new Error("Forbidden");
+}
+
+async function audit(
+  userId: string,
+  action: string,
+  target: string,
+  payload: Record<string, unknown>,
+) {
+  try {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    await supabaseAdmin.from("audit_log").insert({
+      actor: userId,
+      action,
+      target,
+      payload: payload as never,
+    });
+  } catch (e) {
+    console.error("[audit] insert failed", e);
+  }
 }
 
 const idInput = z.object({ id: z.string().uuid() });
@@ -56,6 +75,7 @@ export const upsertDatabase = createServerFn({ method: "POST" })
     if (data.id) {
       const { error } = await supabaseAdmin.from("database_connections").update(row as never).eq("id", data.id);
       if (error) throw new Error(error.message);
+      await audit(context.userId, "database.update", data.id, { name: data.name, enabled: data.enabled });
       return { id: data.id };
     }
     const { data: ins, error } = await supabaseAdmin
@@ -64,6 +84,7 @@ export const upsertDatabase = createServerFn({ method: "POST" })
       .select("id")
       .single();
     if (error) throw new Error(error.message);
+    await audit(context.userId, "database.create", ins.id, { name: data.name, db_type: data.db_type });
     return { id: ins.id };
   });
 
@@ -75,6 +96,7 @@ export const deleteDatabase = createServerFn({ method: "POST" })
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { error } = await supabaseAdmin.from("database_connections").delete().eq("id", data.id);
     if (error) throw new Error(error.message);
+    await audit(context.userId, "database.delete", data.id, {});
     return { ok: true };
   });
 
@@ -99,8 +121,6 @@ export const testDatabase = createServerFn({ method: "POST" })
       status = "invalid_url";
       err = "Connection URL must start with postgres://, postgresql://, or mysql://";
     } else {
-      // Actual TCP connection is not attempted here — Workers cannot open arbitrary DB sockets.
-      // M5 will dispatch a real probe through the remote-agent.
       status = "format_ok";
       err = "Validated URL format only. A real TCP probe runs via remote-agent in M5.";
     }
@@ -112,6 +132,7 @@ export const testDatabase = createServerFn({ method: "POST" })
         last_validation_error: err,
       })
       .eq("id", data.id);
+    await audit(context.userId, "database.test", data.id, { status, error: err });
     return { ok: status === "format_ok", status, error: err };
   });
 
@@ -163,9 +184,14 @@ export const upsertStorage = createServerFn({ method: "POST" })
     };
     if (data.access_key_id) row.access_key_id = data.access_key_id;
     if (data.secret_access_key) row.secret_access_key = data.secret_access_key;
+    if (data.is_default) {
+      // ensure only one default
+      await supabaseAdmin.from("storage_backends").update({ is_default: false } as never).neq("id", data.id ?? "00000000-0000-0000-0000-000000000000");
+    }
     if (data.id) {
       const { error } = await supabaseAdmin.from("storage_backends").update(row as never).eq("id", data.id);
       if (error) throw new Error(error.message);
+      await audit(context.userId, "storage.update", data.id, { name: data.name, enabled: data.enabled, is_default: data.is_default });
       return { id: data.id };
     }
     const { data: ins, error } = await supabaseAdmin
@@ -174,7 +200,21 @@ export const upsertStorage = createServerFn({ method: "POST" })
       .select("id")
       .single();
     if (error) throw new Error(error.message);
+    await audit(context.userId, "storage.create", ins.id, { name: data.name, provider_type: data.provider_type });
     return { id: ins.id };
+  });
+
+export const setDefaultStorage = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: { id: string }) => idInput.parse(input))
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context.supabase, context.userId);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    await supabaseAdmin.from("storage_backends").update({ is_default: false } as never).neq("id", data.id);
+    const { error } = await supabaseAdmin.from("storage_backends").update({ is_default: true } as never).eq("id", data.id);
+    if (error) throw new Error(error.message);
+    await audit(context.userId, "storage.set_default", data.id, {});
+    return { ok: true };
   });
 
 export const deleteStorage = createServerFn({ method: "POST" })
@@ -185,6 +225,7 @@ export const deleteStorage = createServerFn({ method: "POST" })
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { error } = await supabaseAdmin.from("storage_backends").delete().eq("id", data.id);
     if (error) throw new Error(error.message);
+    await audit(context.userId, "storage.delete", data.id, {});
     return { ok: true };
   });
 
@@ -216,6 +257,7 @@ export const testStorage = createServerFn({ method: "POST" })
         last_validation_error: err,
       })
       .eq("id", data.id);
+    await audit(context.userId, "storage.test", data.id, { status, error: err });
     return { ok: status === "config_ok", status, error: err };
   });
 
@@ -268,6 +310,7 @@ export const upsertIntegration = createServerFn({ method: "POST" })
     if (data.id) {
       const { error } = await supabaseAdmin.from("api_integrations").update(row as never).eq("id", data.id);
       if (error) throw new Error(error.message);
+      await audit(context.userId, "integration.update", data.id, { name: data.name, enabled: data.enabled, allow_agent_use: data.allow_agent_use });
       return { id: data.id };
     }
     const { data: ins, error } = await supabaseAdmin
@@ -276,6 +319,7 @@ export const upsertIntegration = createServerFn({ method: "POST" })
       .select("id")
       .single();
     if (error) throw new Error(error.message);
+    await audit(context.userId, "integration.create", ins.id, { name: data.name, base_url: data.base_url });
     return { id: ins.id };
   });
 
@@ -287,6 +331,7 @@ export const deleteIntegration = createServerFn({ method: "POST" })
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { error } = await supabaseAdmin.from("api_integrations").delete().eq("id", data.id);
     if (error) throw new Error(error.message);
+    await audit(context.userId, "integration.delete", data.id, {});
     return { ok: true };
   });
 
@@ -334,6 +379,7 @@ export const testIntegration = createServerFn({ method: "POST" })
         last_validation_error: err,
       })
       .eq("id", data.id);
+    await audit(context.userId, "integration.test", data.id, { status, error: err });
     return { ok: status === "online", status, error: err };
   });
 
@@ -392,6 +438,11 @@ export const upsertWorkspace = createServerFn({ method: "POST" })
     if (data.id) {
       const { error } = await supabaseAdmin.from("workspaces").update(row as never).eq("id", data.id);
       if (error) throw new Error(error.message);
+      await audit(context.userId, "workspace.update", data.id, {
+        name: data.name,
+        file_access_policy: data.file_access_policy,
+        command_permission_level: data.command_permission_level,
+      });
       return { id: data.id };
     }
     const { data: ins, error } = await supabaseAdmin
@@ -400,6 +451,7 @@ export const upsertWorkspace = createServerFn({ method: "POST" })
       .select("id")
       .single();
     if (error) throw new Error(error.message);
+    await audit(context.userId, "workspace.create", ins.id, { name: data.name, path: data.path });
     return { id: ins.id };
   });
 
@@ -411,5 +463,21 @@ export const deleteWorkspace = createServerFn({ method: "POST" })
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { error } = await supabaseAdmin.from("workspaces").delete().eq("id", data.id);
     if (error) throw new Error(error.message);
+    await audit(context.userId, "workspace.delete", data.id, {});
     return { ok: true };
+  });
+
+/* ------------------------------ Audit log ------------------------------ */
+
+export const listAuditLog = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    // RLS lets admins see all, others see own actions.
+    const { data, error } = await context.supabase
+      .from("audit_log")
+      .select("id, action, target, payload, actor, workspace_id, created_at")
+      .order("created_at", { ascending: false })
+      .limit(200);
+    if (error) throw new Error(error.message);
+    return { entries: data ?? [] };
   });

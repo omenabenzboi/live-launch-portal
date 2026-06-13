@@ -150,5 +150,16 @@ export const testProvider = createServerFn({ method: "POST" })
       })
       .eq("id", data.id);
 
+    try {
+      await supabaseAdmin.from("audit_log").insert({
+        actor: context.userId,
+        action: "provider.test",
+        target: data.id,
+        payload: { status, error: err, model_count: models.length } as never,
+      });
+    } catch (e) {
+      console.error("[audit] provider.test insert failed", e);
+    }
+
     return { ok: status === "ok", status, error: err, models };
   });
