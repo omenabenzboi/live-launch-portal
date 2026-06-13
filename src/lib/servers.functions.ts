@@ -85,6 +85,9 @@ export const healthCheckServer = createServerFn({ method: "POST" })
       .single();
     if (error || !srv) throw new Error(error?.message ?? "Server not found");
     const { daemonHealth } = await import("@/lib/tools/remote-agent.server");
+    if (!srv.daemon_url || !srv.daemon_token) {
+      throw new Error("Server is missing daemon URL or token.");
+    }
     const res = await daemonHealth({ url: srv.daemon_url, token: srv.daemon_token });
     const status = res.ok ? "online" : "offline";
     await supabaseAdmin
