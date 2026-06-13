@@ -200,6 +200,17 @@ function SettingsPage() {
         </DropdownMenu>
       </Section>
 
+      <Section title="Approvals">
+        <Link to="/approvals" className="block">
+          <Row
+            icon={ShieldCheck}
+            label="Approval queue"
+            hint="Review pending agent actions"
+            right={<ChevronRight className="h-4 w-4" />}
+          />
+        </Link>
+      </Section>
+
       <Section title="Permissions">
         <Row
           icon={ShieldCheck}
