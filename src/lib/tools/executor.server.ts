@@ -1,8 +1,18 @@
-// Server-only tool executor. Supports adapter modes: mock | dry-run |
-// remote-agent (stub) | ssh (stub). Default is mock so nothing dangerous
-// can run from Lovable hosting in M3.
+// Server-only tool executor.
+// Adapter modes: mock | dry-run | remote-agent | ssh (ssh still stubbed in M4).
+// Restricted/dangerous tools are queued into `approvals`; safe tools run inline.
+// All tool activity (queued, executed, denied) is written to `audit_log`.
+// Approval lifecycle events also create a `notifications` row.
+
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { classifyRisk, summarizeInput, type ToolName } from "./risk";
+import {
+  daemonExec,
+  daemonReadFile,
+  daemonWriteFile,
+  resolveDaemonConfig,
+  type DaemonConfig,
+} from "./remote-agent.server";
 
 export type AdapterMode = "mock" | "dry-run" | "remote-agent" | "ssh";
 
@@ -25,12 +35,47 @@ export interface ToolResult {
   data?: unknown;
 }
 
-/**
- * Decide whether a tool call should execute or wait for approval.
- * - safe → run in current adapter mode (mock returns synthetic data)
- * - restricted → create approval row, return pending
- * - dangerous → create approval row flagged dangerous, return pending
- */
+async function audit(
+  ctx: Pick<ExecContext, "workspaceId" | "userId">,
+  action: string,
+  target: string,
+  payload: Record<string, unknown>,
+) {
+  try {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    await supabaseAdmin.from("audit_log").insert({
+      actor: ctx.userId,
+      workspace_id: ctx.workspaceId ?? null,
+      action,
+      target,
+      payload,
+    });
+  } catch (e) {
+    console.error("[audit] insert failed", e);
+  }
+}
+
+async function notify(opts: {
+  userId?: string | null;
+  title: string;
+  body?: string;
+  severity?: "info" | "warning" | "error" | "success";
+  link?: string;
+}) {
+  try {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    await supabaseAdmin.from("notifications").insert({
+      user_id: opts.userId ?? null,
+      title: opts.title,
+      body: opts.body ?? null,
+      severity: opts.severity ?? "info",
+      link: opts.link ?? null,
+    });
+  } catch (e) {
+    console.error("[notify] insert failed", e);
+  }
+}
+
 export async function executeTool(
   tool: ToolName,
   input: Record<string, unknown>,
@@ -40,7 +85,14 @@ export async function executeTool(
   const summary = summarizeInput(tool, input);
 
   if (risk === "safe") {
-    return runSafe(tool, input, ctx, summary);
+    const result = await runSafe(tool, input, ctx, summary);
+    await audit(ctx, `tool.${tool}`, "executor", {
+      risk,
+      summary,
+      mode: ctx.adapterMode,
+      ok: result.ok,
+    });
+    return result;
   }
 
   // Restricted / dangerous → queue an approval row, do NOT execute.
@@ -72,6 +124,20 @@ export async function executeTool(
     };
   }
 
+  await audit(ctx, `approval.requested`, approval.id, {
+    tool,
+    risk,
+    summary,
+    mode: ctx.adapterMode,
+  });
+  await notify({
+    userId: null, // broadcast to admins; notif RLS allows broadcast rows
+    title: `Approval requested: ${tool}`,
+    body: `${risk.toUpperCase()} · ${summary}`,
+    severity: risk === "dangerous" ? "warning" : "info",
+    link: "/approvals",
+  });
+
   return {
     ok: false,
     pending: true,
@@ -100,8 +166,6 @@ async function runSafe(
   }
 
   if (tool === "web_search") {
-    // Web search adapter not wired yet — return a clear note so the model
-    // doesn't pretend it has fresh data.
     return {
       ok: true,
       mode: ctx.adapterMode,
@@ -114,9 +178,14 @@ async function runSafe(
   }
 
   if (tool === "read_file") {
+    // Safe reads can run inline against the remote agent if configured.
+    if (ctx.adapterMode === "remote-agent") {
+      const cfg = await resolveDaemonConfig(ctx.workspaceId);
+      if (cfg) return runReadRemote(cfg, input, ctx, summary);
+    }
     return mockOrDryRun(tool, input, ctx, summary, "safe", {
       path: input.path,
-      content: `// [mock] Contents of ${input.path} would appear here. Connect a workspace adapter (Settings → Servers) to enable real reads.`,
+      content: `// [mock] Contents of ${input.path} would appear here. Configure a server-agent in Settings → Servers to enable real reads.`,
     });
   }
 
@@ -136,11 +205,78 @@ export async function executeApproved(
   ctx: ExecContext,
 ): Promise<ToolResult> {
   const summary = summarizeInput(tool, input);
-  return mockOrDryRun(tool, input, ctx, summary, "restricted", {
+  const risk = classifyRisk({ tool, input }).risk;
+
+  if (ctx.adapterMode === "remote-agent") {
+    const cfg = await resolveDaemonConfig(ctx.workspaceId);
+    if (!cfg) {
+      return {
+        ok: false,
+        mode: ctx.adapterMode,
+        risk,
+        summary,
+        note: "Remote-agent adapter selected but no enabled server is attached to this workspace.",
+      };
+    }
+    if (tool === "run_command") return runExecRemote(cfg, input, ctx, summary);
+    if (tool === "read_file") return runReadRemote(cfg, input, ctx, summary);
+    if (tool === "write_file") return runWriteRemote(cfg, input, ctx, summary);
+  }
+
+  return mockOrDryRun(tool, input, ctx, summary, risk, {
     tool,
     input,
-    note: "Approval recorded. Real execution will run via the configured server-agent adapter (M4+).",
+    note: "Approval recorded. Configure a remote-agent server in Settings → Servers for real execution.",
   });
+}
+
+async function runExecRemote(
+  cfg: DaemonConfig,
+  input: Record<string, unknown>,
+  ctx: ExecContext,
+  summary: string,
+): Promise<ToolResult> {
+  const r = await daemonExec(cfg, {
+    command: String(input.command ?? ""),
+    cwd: typeof input.cwd === "string" ? input.cwd : undefined,
+  });
+  await audit(ctx, "tool.run_command.remote", "daemon", {
+    summary,
+    ok: r.ok,
+    status: r.status,
+    exitCode: r.data?.exitCode,
+  });
+  if (!r.ok) {
+    return { ok: false, mode: "remote-agent", risk: "restricted", summary, note: r.error };
+  }
+  return { ok: true, mode: "remote-agent", risk: "restricted", summary, data: r.data };
+}
+
+async function runReadRemote(
+  cfg: DaemonConfig,
+  input: Record<string, unknown>,
+  ctx: ExecContext,
+  summary: string,
+): Promise<ToolResult> {
+  const r = await daemonReadFile(cfg, { path: String(input.path ?? "") });
+  await audit(ctx, "tool.read_file.remote", "daemon", { summary, ok: r.ok });
+  if (!r.ok) return { ok: false, mode: "remote-agent", risk: "safe", summary, note: r.error };
+  return { ok: true, mode: "remote-agent", risk: "safe", summary, data: r.data };
+}
+
+async function runWriteRemote(
+  cfg: DaemonConfig,
+  input: Record<string, unknown>,
+  ctx: ExecContext,
+  summary: string,
+): Promise<ToolResult> {
+  const r = await daemonWriteFile(cfg, {
+    path: String(input.path ?? ""),
+    content: String(input.content ?? ""),
+  });
+  await audit(ctx, "tool.write_file.remote", "daemon", { summary, ok: r.ok });
+  if (!r.ok) return { ok: false, mode: "remote-agent", risk: "restricted", summary, note: r.error };
+  return { ok: true, mode: "remote-agent", risk: "restricted", summary, data: r.data };
 }
 
 function mockOrDryRun(
@@ -162,17 +298,16 @@ function mockOrDryRun(
       note: "Dry-run mode — no side effects performed.",
     };
   }
-  if (mode === "remote-agent" || mode === "ssh") {
+  if (mode === "ssh") {
     return {
       ok: false,
       pending: true,
       mode,
       risk,
       summary,
-      note: `Adapter "${mode}" is not yet connected. Falling back to mock. Configure the server-agent in Settings → Servers (M4).`,
+      note: "SSH adapter is not implemented yet. Switch the server to remote-agent or mock.",
     };
   }
-  // mock
   return {
     ok: true,
     mode,
