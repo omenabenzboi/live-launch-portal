@@ -392,6 +392,14 @@ function ToolCallCard({ part }: { part: ToolPart }) {
         <StateIcon className={`ml-auto h-3.5 w-3.5 ${stateClass}`} />
       </summary>
       <div className="border-t border-border/50 px-3 py-2 text-[11.5px] font-mono space-y-1.5">
+        {isPending && (
+          <a
+            href="/approvals"
+            className="block rounded-md border border-amber-500/30 bg-amber-500/10 px-2 py-1.5 text-[12px] text-amber-300 font-sans"
+          >
+            {output?.note ?? "Awaiting approval."} <span className="underline">Open approvals →</span>
+          </a>
+        )}
         {part.input !== undefined && (
           <div>
             <div className="text-[10px] uppercase tracking-wider text-muted-foreground mb-0.5">Input</div>
