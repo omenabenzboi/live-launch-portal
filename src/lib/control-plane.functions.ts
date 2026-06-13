@@ -54,7 +54,7 @@ export const upsertDatabase = createServerFn({ method: "POST" })
     };
     if (data.connection_url) row.connection_url = data.connection_url;
     if (data.id) {
-      const { error } = await supabaseAdmin.from("database_connections").update(row).eq("id", data.id);
+      const { error } = await supabaseAdmin.from("database_connections").update(row as never).eq("id", data.id);
       if (error) throw new Error(error.message);
       return { id: data.id };
     }
@@ -164,7 +164,7 @@ export const upsertStorage = createServerFn({ method: "POST" })
     if (data.access_key_id) row.access_key_id = data.access_key_id;
     if (data.secret_access_key) row.secret_access_key = data.secret_access_key;
     if (data.id) {
-      const { error } = await supabaseAdmin.from("storage_backends").update(row).eq("id", data.id);
+      const { error } = await supabaseAdmin.from("storage_backends").update(row as never).eq("id", data.id);
       if (error) throw new Error(error.message);
       return { id: data.id };
     }
@@ -266,7 +266,7 @@ export const upsertIntegration = createServerFn({ method: "POST" })
     };
     if (data.auth_token) row.auth_token = data.auth_token;
     if (data.id) {
-      const { error } = await supabaseAdmin.from("api_integrations").update(row).eq("id", data.id);
+      const { error } = await supabaseAdmin.from("api_integrations").update(row as never).eq("id", data.id);
       if (error) throw new Error(error.message);
       return { id: data.id };
     }
@@ -390,7 +390,7 @@ export const upsertWorkspace = createServerFn({ method: "POST" })
       created_by: context.userId,
     };
     if (data.id) {
-      const { error } = await supabaseAdmin.from("workspaces").update(row).eq("id", data.id);
+      const { error } = await supabaseAdmin.from("workspaces").update(row as never).eq("id", data.id);
       if (error) throw new Error(error.message);
       return { id: data.id };
     }
