@@ -219,6 +219,7 @@ function ServerForm({
           <option value="dry-run">dry-run</option>
           <option value="remote-agent">remote-agent</option>
           <option value="ssh">ssh (not yet implemented)</option>
+          <option value="self-hosted-local">self-hosted-local (requires explicit enable)</option>
         </select>
       </div>
 
