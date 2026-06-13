@@ -24,6 +24,7 @@ import {
   LogOut,
   Check,
 } from "lucide-react";
+import { Link } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/_authenticated/settings")({
   head: () => ({ meta: [{ title: "Settings — Omena Codex" }] }),
