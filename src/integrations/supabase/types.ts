@@ -675,7 +675,13 @@ export type Database = {
       app_role: "admin" | "member"
       approval_status: "pending" | "approved" | "denied" | "expired"
       notification_severity: "info" | "success" | "warning" | "error"
-      provider_kind: "openai" | "anthropic" | "google" | "openrouter" | "custom"
+      provider_kind:
+        | "openai"
+        | "anthropic"
+        | "google"
+        | "openrouter"
+        | "custom"
+        | "ollama"
       task_status: "queued" | "waiting" | "running" | "completed" | "failed"
     }
     CompositeTypes: {
@@ -807,7 +813,14 @@ export const Constants = {
       app_role: ["admin", "member"],
       approval_status: ["pending", "approved", "denied", "expired"],
       notification_severity: ["info", "success", "warning", "error"],
-      provider_kind: ["openai", "anthropic", "google", "openrouter", "custom"],
+      provider_kind: [
+        "openai",
+        "anthropic",
+        "google",
+        "openrouter",
+        "custom",
+        "ollama",
+      ],
       task_status: ["queued", "waiting", "running", "completed", "failed"],
     },
   },
