@@ -373,17 +373,33 @@ function ToolCallCard({ part }: { part: ToolPart }) {
   // run_command preview
   const cmd = part.type === "tool-run_command" ? (part.input as { command?: string } | undefined)?.command : undefined;
 
+  const output = part.output as { pending?: boolean; approvalId?: string; note?: string; mode?: string; risk?: string } | undefined;
+  const isPending = output?.pending === true;
+
   return (
-    <details className="group rounded-xl border border-border/70 bg-card/60 overflow-hidden" open={state !== "output-available"}>
+    <details className="group rounded-xl border border-border/70 bg-card/60 overflow-hidden" open={state !== "output-available" || isPending}>
       <summary className="flex cursor-pointer select-none items-center gap-2 px-3 py-2 text-[12.5px]">
         <Icon className={`h-3.5 w-3.5 ${meta.tint}`} />
         <span className="font-medium">{meta.label}</span>
         {cmd && (
           <code className="ml-1 truncate font-mono text-[11.5px] text-muted-foreground">{cmd}</code>
         )}
+        {isPending && (
+          <span className="ml-1 text-[10px] uppercase tracking-wider px-1.5 py-0.5 rounded-md border border-amber-500/30 text-amber-400 bg-amber-500/10">
+            awaiting approval
+          </span>
+        )}
         <StateIcon className={`ml-auto h-3.5 w-3.5 ${stateClass}`} />
       </summary>
       <div className="border-t border-border/50 px-3 py-2 text-[11.5px] font-mono space-y-1.5">
+        {isPending && (
+          <a
+            href="/approvals"
+            className="block rounded-md border border-amber-500/30 bg-amber-500/10 px-2 py-1.5 text-[12px] text-amber-300 font-sans"
+          >
+            {output?.note ?? "Awaiting approval."} <span className="underline">Open approvals →</span>
+          </a>
+        )}
         {part.input !== undefined && (
           <div>
             <div className="text-[10px] uppercase tracking-wider text-muted-foreground mb-0.5">Input</div>
