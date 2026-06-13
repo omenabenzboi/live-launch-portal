@@ -298,14 +298,17 @@ function mockOrDryRun(
       note: "Dry-run mode — no side effects performed.",
     };
   }
-  if (mode === "ssh") {
+  if (mode === "ssh" || mode === "self-hosted-local") {
     return {
       ok: false,
       pending: true,
       mode,
       risk,
       summary,
-      note: "SSH adapter is not implemented yet. Switch the server to remote-agent or mock.",
+      note:
+        mode === "ssh"
+          ? "SSH adapter is not implemented yet. Switch the server to remote-agent or mock."
+          : "self-hosted-local adapter is staged but disabled. Real execution requires running the app on a VPS with an explicit local runner enable flag (M5).",
     };
   }
   return {
